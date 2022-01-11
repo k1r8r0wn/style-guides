@@ -9,4 +9,4 @@ Style guides from https://github.com/rubocop adapted in markdown for using in Da
 
 ## Last update
 
-11.01.2021
+11.01.2022
