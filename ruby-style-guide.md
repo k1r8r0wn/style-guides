@@ -1,5817 +1,4814 @@
-= The Ruby Style Guide
-:idprefix:
-:idseparator: -
-:sectanchors:
-:sectlinks:
-:toc: preamble
-:toclevels: 1
-ifndef::backend-pdf[]
-:toc-title: pass:[<h2>Table of Contents</h2>]
-endif::[]
-:source-highlighter: rouge
+# Introduction
 
-== Introduction
+> Role models are important.
+>
+> —  Officer Alex J. Murphy / RoboCop
 
-[quote, Officer Alex J. Murphy / RoboCop]
-____
-Role models are important.
-____
+This Ruby style guide recommends best practices so that real-world Ruby programmers can write code that can be maintained by other real-world Ruby programmers. A style guide that reflects real-world usage gets used, while a style guide that holds to an ideal that has been rejected by the people it is supposed to help risks not getting used at all - no matter how good it is.
 
-ifdef::env-github[]
-TIP: You can find a beautiful version of this guide with much improved navigation at https://rubystyle.guide.
-endif::[]
+The guide is separated into several sections of related guidelines. We’ve tried to add the rationale behind the guidelines (if it’s omitted we’ve assumed it’s pretty obvious).
 
-This Ruby style guide recommends best practices so that real-world Ruby programmers can write code that can be maintained by other real-world Ruby programmers.
-A style guide that reflects real-world usage gets used, while a style guide that holds to an ideal that has been rejected by the people it is supposed to help risks not getting used at all - no matter how good it is.
-
-The guide is separated into several sections of related guidelines.
-We've tried to add the rationale behind the guidelines (if it's omitted we've assumed it's pretty obvious).
-
-We didn't come up with all the guidelines out of nowhere - they are mostly based on the professional experience of the editors, feedback and suggestions from members of the Ruby community and various highly regarded Ruby programming resources, such as https://pragprog.com/book/ruby4/programming-ruby-1-9-2-0["Programming Ruby"] and https://www.amazon.com/Ruby-Programming-Language-David-Flanagan/dp/0596516177["The Ruby Programming Language"].
+We didn’t come up with all the guidelines out of nowhere - they are mostly based on the professional experience of the editors, feedback and suggestions from members of the Ruby community and various highly regarded Ruby programming resources, such as ["Programming Ruby"](https://pragprog.com/book/ruby4/programming-ruby-1-9-2-0) and ["The Ruby Programming Language"](https://www.amazon.com/Ruby-Programming-Language-David-Flanagan/dp/0596516177).
 
 This style guide evolves over time as additional conventions are identified and past conventions are rendered obsolete by changes in Ruby itself.
 
-ifdef::env-github[]
-You can generate a PDF copy of this guide using https://asciidoctor.org/docs/asciidoctor-pdf/[AsciiDoctor PDF], and an HTML copy https://asciidoctor.org/docs/convert-documents/#converting-a-document-to-html[with] https://asciidoctor.org/#installation[AsciiDoctor] using the following commands:
+If you’re into Rails or RSpec you might want to check out the complementary [Ruby on Rails Style Guide](https://github.com/rubocop/rails-style-guide) and [RSpec Style Guide](https://github.com/rubocop/rspec-style-guide).
 
-[source,shell]
-----
-# Generates README.pdf
-asciidoctor-pdf -a allow-uri-read README.adoc
+[RuboCop](https://github.com/rubocop/rubocop) is a static code analyzer (linter) and formatter, based on this style guide.
 
-# Generates README.html
-asciidoctor
-----
+## Guiding Principles
 
-[TIP]
-====
-Install the `rouge` gem to get nice syntax highlighting in the generated document.
+> Programs must be written for people to read, and only incidentally for machines to execute.
+>
+> —  Harold Abelson Structure and Interpretation of Computer Programs
 
-[source,shell]
-----
-gem install rouge
-----
-====
-endif::[]
+It’s common knowledge that code is read much more often than it is written. The guidelines provided here are intended to improve the readability of code and make it consistent across the wide spectrum of Ruby code. They are also meant to reflect real-world usage of Ruby instead of a random ideal. When we had to choose between a very established practice and a subjectively better alternative we’ve opted to recommend the established practice.[1]
 
-[TIP]
-====
-If you're into Rails or RSpec you might want to check out the complementary https://github.com/rubocop/rails-style-guide[Ruby on Rails Style Guide] and https://github.com/rubocop/rspec-style-guide[RSpec Style Guide].
-====
+There are some areas in which there is no clear consensus in the Ruby community regarding a particular style (like string literal quoting, spacing inside hash literals, dot position in multi-line method chaining, etc.). In such scenarios all popular styles are acknowledged and it’s up to you to pick one and apply it consistently.
 
-TIP: https://github.com/rubocop/rubocop[RuboCop] is a static code analyzer (linter) and formatter, based on this style guide.
+Ruby had existed for over 15 years by the time the guide was created, and the language’s flexibility and lack of common standards have contributed to the creation of numerous styles for just about everything. Rallying people around the cause of community standards took a lot of time and energy, and we still have a lot of ground to cover.
 
-=== Guiding Principles
+Ruby is famously optimized for programmer happiness. We’d like to believe that this guide is going to help you optimize for maximum programmer happiness.
 
-[quote, Harold Abelson, Structure and Interpretation of Computer Programs]
-____
-Programs must be written for people to read, and only incidentally for machines to execute.
-____
+## A Note about Consistency
 
-It's common knowledge that code is read much more often than it is written.
-The guidelines provided here are intended to improve the readability of code and make it consistent across the wide spectrum of Ruby code.
-They are also meant to reflect real-world usage of Ruby instead of a random ideal. When we had to choose between a very established practice
-and a subjectively better alternative we've opted to recommend the established practice.footnote:[Occasionally we might suggest to the reader to consider some alternatives, though.]
+> A foolish consistency is the hobgoblin of little minds, adored by little statesmen and philosophers and divines.
+>
+> —  Ralph Waldo Emerson
 
-There are some areas in which there is no clear consensus in the Ruby community regarding a particular style (like string literal quoting, spacing inside hash literals, dot position in multi-line method chaining, etc.).
-In such scenarios all popular styles are acknowledged and it's up to you to pick one and apply it consistently.
+A style guide is about consistency. Consistency with this style guide is important. Consistency within a project is more important. Consistency within one class or method is the most important.
 
-Ruby had existed for over 15 years by the time
-the guide was created, and the language's flexibility and lack of common standards have contributed to the
-creation of numerous styles for just about everything. Rallying people around the cause of community standards
-took a lot of time and energy, and we still have a lot of ground to cover.
-
-Ruby is famously optimized for programmer happiness. We'd like to believe that this guide is going to help you optimize for maximum
-programmer happiness.
-
-=== A Note about Consistency
-
-[quote, Ralph Waldo Emerson]
-____
-A foolish consistency is the hobgoblin of little minds, adored by little statesmen and philosophers and divines.
-____
-
-A style guide is about consistency.
-Consistency with this style guide is important.
-Consistency within a project is more important.
-Consistency within one class or method is the most important.
-
-However, know when to be inconsistent -- sometimes style guide recommendations just aren't applicable. When in doubt, use your best judgment.
-Look at other examples and decide what looks best. And don't hesitate to ask!
+However, know when to be inconsistent — sometimes style guide recommendations just aren’t applicable. When in doubt, use your best judgment. Look at other examples and decide what looks best. And don’t hesitate to ask!
 
 In particular: do not break backwards compatibility just to comply with this guide!
 
 Some other good reasons to ignore a particular guideline:
 
-* When applying the guideline would make the code less readable, even for someone who is used to reading code that follows this style guide.
-* To be consistent with surrounding code that also breaks it (maybe for historic reasons) -- although this is also an opportunity to clean up someone else's mess (in true XP style).
-* Because the code in question predates the introduction of the guideline and there is no other reason to be modifying that code.
-* When the code needs to remain compatible with older versions of Ruby that don't support the feature recommended by the style guide.
+-   When applying the guideline would make the code less readable, even for someone who is used to reading code that follows this style guide.
 
-=== Translations
+-   To be consistent with surrounding code that also breaks it (maybe for historic reasons) — although this is also an opportunity to clean up someone else’s mess (in true XP style).
+
+-   Because the code in question predates the introduction of the guideline and there is no other reason to be modifying that code.
+
+-   When the code needs to remain compatible with older versions of Ruby that don’t support the feature recommended by the style guide.
+
+## Translations
 
 Translations of the guide are available in the following languages:
 
-* https://github.com/JuanitoFatas/ruby-style-guide/blob/master/README-zhCN.md[Chinese Simplified]
-* https://github.com/JuanitoFatas/ruby-style-guide/blob/master/README-zhTW.md[Chinese Traditional]
-* https://github.com/HassanTC/ruby-style-guide/blob/master/README-EgAr.md[Egyptian Arabic]
-* https://github.com/gauthier-delacroix/ruby-style-guide/blob/master/README-frFR.md[French]
-* https://github.com/fortissimo1997/ruby-style-guide/blob/japanese/README.ja.md[Japanese]
-* https://github.com/dalzony/ruby-style-guide/blob/master/README-koKR.md[Korean]
-* https://github.com/rubensmabueno/ruby-style-guide/blob/master/README-PT-BR.md[Portuguese (pt-BR)]
-* https://github.com/arbox/ruby-style-guide/blob/master/README-ruRU.md[Russian]
-* https://github.com/alemohamad/ruby-style-guide/blob/master/README-esLA.md[Spanish]
-* https://github.com/CQBinh/ruby-style-guide/blob/master/README-viVN.md[Vietnamese]
+-   [Chinese Simplified](https://github.com/JuanitoFatas/ruby-style-guide/blob/master/README-zhCN.md)
 
-NOTE: These translations are not maintained by our editor team, so their quality
-and level of completeness may vary. The translated versions of the guide often
-lag behind the upstream English version.
+-   [Chinese Traditional](https://github.com/JuanitoFatas/ruby-style-guide/blob/master/README-zhTW.md)
 
-== Source Code Layout
+-   [Egyptian Arabic](https://github.com/HassanTC/ruby-style-guide/blob/master/README-EgAr.md)
 
-[quote, Jerry Coffin (on indentation)]
-____
-Nearly everybody is convinced that every style but their own is
-ugly and unreadable. Leave out the "but their own" and they're
-probably right...
-____
+-   [French](https://github.com/gauthier-delacroix/ruby-style-guide/blob/master/README-frFR.md)
 
-=== Source Encoding [[utf-8]]
+-   [Japanese](https://github.com/fortissimo1997/ruby-style-guide/blob/japanese/README.ja.md)
+
+-   [Korean](https://github.com/dalzony/ruby-style-guide/blob/master/README-koKR.md)
+
+-   [Portuguese (pt-BR)](https://github.com/rubensmabueno/ruby-style-guide/blob/master/README-PT-BR.md)
+
+-   [Russian](https://github.com/arbox/ruby-style-guide/blob/master/README-ruRU.md)
+
+-   [Spanish](https://github.com/alemohamad/ruby-style-guide/blob/master/README-esLA.md)
+
+-   [Vietnamese](https://github.com/CQBinh/ruby-style-guide/blob/master/README-viVN.md)
+
+These translations are not maintained by our editor team, so their quality and level of completeness may vary. The translated versions of the guide often lag behind the upstream English version.
+
+# Source Code Layout
+
+> Nearly everybody is convinced that every style but their own is ugly and unreadable. Leave out the "but their own" and they’re probably right…
+>
+> —  Jerry Coffin (on indentation)
+
+## Source Encoding <span id="utf-8"></span>
 
 Use `UTF-8` as the source file encoding.
 
-TIP: UTF-8 has been the default source file encoding since Ruby 2.0.
+UTF-8 has been the default source file encoding since Ruby 2.0.
 
-=== Tabs or Spaces? [[tabs-or-spaces]]
+## Tabs or Spaces? <span id="tabs-or-spaces"></span>
 
 Use only spaces for indentation. No hard tabs.
 
-=== Indentation [[spaces-indentation]]
+## Indentation <span id="spaces-indentation"></span>
 
-Use two *spaces* per indentation level (aka soft tabs).
+Use two **spaces** per indentation level (aka soft tabs).
 
-[source,ruby]
-----
-# bad - four spaces
-def some_method
-    do_something
-end
+    # bad - four spaces
+    def some_method
+        do_something
+    end
 
-# good
-def some_method
-  do_something
-end
-----
+    # good
+    def some_method
+      do_something
+    end
 
-=== Maximum Line Length [[max-line-length]]
+## Maximum Line Length <span id="max-line-length"></span>
 
 Limit lines to 80 characters.
 
-TIP: Most editors and IDEs have configuration options to help you with that.
-They would typically highlight lines that exceed the length limit.
+Most editors and IDEs have configuration options to help you with that. They would typically highlight lines that exceed the length limit.
 
-.Why Bother with 80 characters in a World of Modern Widescreen Displays?
-****
+A lot of people these days feel that a maximum line length of 80 characters is just a remnant of the past and makes little sense today. After all - modern displays can easily fit 200+ characters on a single line. Still, there are some important benefits to be gained from sticking to shorter lines of code.
 
-A lot of people these days feel that a maximum line length of 80 characters is
-just a remnant of the past and makes little sense today. After all - modern
-displays can easily fit 200+ characters on a single line.  Still, there are some
-important benefits to be gained from sticking to shorter lines of code.
+First, and foremost - numerous studies have shown that humans read much faster vertically and very long lines of text impede the reading process. As noted earlier, one of the guiding principles of this style guide is to optimize the code we write for human consumption.
 
-First, and foremost - numerous studies have shown that humans read much faster
-vertically and very long lines of text impede the reading process. As noted
-earlier, one of the guiding principles of this style guide is to optimize the
-code we write for human consumption.
+Additionally, limiting the required editor window width makes it possible to have several files open side-by-side, and works well when using code review tools that present the two versions in adjacent columns.
 
-Additionally, limiting the required editor window width makes it possible to
-have several files open side-by-side, and works well when using code review
-tools that present the two versions in adjacent columns.
+The default wrapping in most tools disrupts the visual structure of the code, making it more difficult to understand. The limits are chosen to avoid wrapping in editors with the window width set to 80, even if the tool places a marker glyph in the final column when wrapping lines. Some web based tools may not offer dynamic line wrapping at all.
 
-The default wrapping in most tools disrupts the visual structure of the code,
-making it more difficult to understand. The limits are chosen to avoid wrapping
-in editors with the window width set to 80, even if the tool places a marker
-glyph in the final column when wrapping lines. Some web based tools may not
-offer dynamic line wrapping at all.
+Some teams strongly prefer a longer line length. For code maintained exclusively or primarily by a team that can reach agreement on this issue, it is okay to increase the line length limit up to 100 characters, or all the way up to 120 characters. Please, restrain the urge to go beyond 120 characters.
 
-Some teams strongly prefer a longer line length. For code maintained exclusively
-or primarily by a team that can reach agreement on this issue, it is okay to
-increase the line length limit up to 100 characters, or all the way up
-to 120 characters. Please, restrain the urge to go beyond 120 characters.
-****
-
-=== No Trailing Whitespace [[no-trailing-whitespace]]
+## No Trailing Whitespace <span id="no-trailing-whitespace"></span>
 
 Avoid trailing whitespace.
 
-TIP: Most editors and IDEs have configuration options to visualize trailing whitespace and
-to remove it automatically on save.
+Most editors and IDEs have configuration options to visualize trailing whitespace and to remove it automatically on save.
 
-=== Line Endings [[crlf]]
+## Line Endings <span id="crlf"></span>
 
-Use Unix-style line endings.footnote:[*BSD/Solaris/Linux/macOS users are covered by default, Windows users have to be extra careful.]
+Use Unix-style line endings.[2]
 
-[TIP]
-====
-If you're using Git you might want to add the following configuration setting to protect your project from Windows line endings creeping in:
+If you’re using Git you might want to add the following configuration setting to protect your project from Windows line endings creeping in:
 
-[source,bash]
-----
-$ git config --global core.autocrlf true
-----
-====
+    $ git config --global core.autocrlf true
 
-=== Should I Terminate Files with a Newline? [[newline-eof]]
+## Should I Terminate Files with a Newline? <span id="newline-eof"></span>
 
 End each file with a newline.
 
-TIP: This should be done via editor configuration, not manually.
+This should be done via editor configuration, not manually.
 
-=== Should I Terminate Expressions with `;`? [[no-semicolon]]
+## Should I Terminate Expressions with `;`? <span id="no-semicolon"></span>
 
-Don't use `;` to terminate statements and expressions.
+Don’t use `;` to terminate statements and expressions.
 
-[source,ruby]
-----
-# bad
-puts 'foobar'; # superfluous semicolon
+    # bad
+    puts 'foobar'; # superfluous semicolon
 
-# good
-puts 'foobar'
-----
+    # good
+    puts 'foobar'
 
-=== One Expression Per Line [[one-expression-per-line]]
+## One Expression Per Line <span id="one-expression-per-line"></span>
 
 Use one expression per line.
 
-[source,ruby]
-----
-# bad
-puts 'foo'; puts 'bar' # two expressions on the same line
+    # bad
+    puts 'foo'; puts 'bar' # two expressions on the same line
 
-# good
-puts 'foo'
-puts 'bar'
+    # good
+    puts 'foo'
+    puts 'bar'
 
-puts 'foo', 'bar' # this applies to puts in particular
-----
+    puts 'foo', 'bar' # this applies to puts in particular
 
-=== Spaces and Operators [[spaces-operators]]
+## Spaces and Operators <span id="spaces-operators"></span>
 
-Use spaces around operators, after commas, colons and semicolons.
-Whitespace might be (mostly) irrelevant to the Ruby interpreter, but its proper use is the key to writing easily readable code.
+Use spaces around operators, after commas, colons and semicolons. Whitespace might be (mostly) irrelevant to the Ruby interpreter, but its proper use is the key to writing easily readable code.
 
-[source,ruby]
-----
-# bad
-sum=1+2
-a,b=1,2
-class FooError<StandardError;end
+    # bad
+    sum=1+2
+    a,b=1,2
+    class FooError<StandardError;end
 
-# good
-sum = 1 + 2
-a, b = 1, 2
-class FooError < StandardError; end
-----
+    # good
+    sum = 1 + 2
+    a, b = 1, 2
+    class FooError < StandardError; end
 
 There are a few exceptions:
 
-* Exponent operator:
+-   Exponent operator:
 
-[source,ruby]
-----
-# bad
-e = M * c ** 2
+<!-- -->
 
-# good
-e = M * c**2
-----
+    # bad
+    e = M * c ** 2
 
-* Slash in rational literals:
+    # good
+    e = M * c**2
 
-[source,ruby]
-----
-# bad
-o_scale = 1 / 48r
+-   Slash in rational literals:
 
-# good
-o_scale = 1/48r
-----
+<!-- -->
 
-* Safe navigation operator:
+    # bad
+    o_scale = 1 / 48r
 
-[source,ruby]
-----
-# bad
-foo &. bar
-foo &.bar
-foo&. bar
+    # good
+    o_scale = 1/48r
 
-# good
-foo&.bar
-----
+-   Safe navigation operator:
 
-=== Spaces and Braces [[spaces-braces]]
+<!-- -->
 
-No spaces after `(`, `[` or before `]`, `)`.
-Use spaces around `{` and before `}`.
+    # bad
+    foo &. bar
+    foo &.bar
+    foo&. bar
 
-[source,ruby]
-----
-# bad
-some( arg ).other
-[ 1, 2, 3 ].each{|e| puts e}
+    # good
+    foo&.bar
 
-# good
-some(arg).other
-[1, 2, 3].each { |e| puts e }
-----
+## Spaces and Braces <span id="spaces-braces"></span>
+
+No spaces after `(`, `[` or before `]`, `)`. Use spaces around `{` and before `}`.
+
+    # bad
+    some( arg ).other
+    [ 1, 2, 3 ].each{|e| puts e}
+
+    # good
+    some(arg).other
+    [1, 2, 3].each { |e| puts e }
 
 `{` and `}` deserve a bit of clarification, since they are used for block and hash literals, as well as string interpolation.
 
-For hash literals two styles are considered acceptable.
-The first variant is slightly more readable (and arguably more popular in the Ruby community in general).
-The second variant has the advantage of adding visual difference between block and hash literals.
-Whichever one you pick - apply it consistently.
+For hash literals two styles are considered acceptable. The first variant is slightly more readable (and arguably more popular in the Ruby community in general). The second variant has the advantage of adding visual difference between block and hash literals. Whichever one you pick - apply it consistently.
 
-[source,ruby]
-----
-# good - space after { and before }
-{ one: 1, two: 2 }
+    # good - space after { and before }
+    { one: 1, two: 2 }
 
-# good - no space after { and before }
-{one: 1, two: 2}
-----
+    # good - no space after { and before }
+    {one: 1, two: 2}
 
 With interpolated expressions, there should be no padded-spacing inside the braces.
 
-[source,ruby]
-----
-# bad
-"From: #{ user.first_name }, #{ user.last_name }"
+    # bad
+    "From: #{ user.first_name }, #{ user.last_name }"
 
-# good
-"From: #{user.first_name}, #{user.last_name}"
-----
+    # good
+    "From: #{user.first_name}, #{user.last_name}"
 
-=== No Space after Bang [[no-space-bang]]
+## No Space after Bang <span id="no-space-bang"></span>
 
 No space after `!`.
 
-[source,ruby]
-----
-# bad
-! something
+    # bad
+    ! something
 
-# good
-!something
-----
+    # good
+    !something
 
-=== No Space inside Range Literals [[no-space-inside-range-literals]]
+## No Space inside Range Literals <span id="no-space-inside-range-literals"></span>
 
 No space inside range literals.
 
-[source,ruby]
-----
-# bad
-1 .. 3
-'a' ... 'z'
+    # bad
+    1 .. 3
+    'a' ... 'z'
 
-# good
-1..3
-'a'...'z'
-----
+    # good
+    1..3
+    'a'...'z'
 
-=== Indent `when` to `case` [[indent-when-to-case]]
+## Indent `when` to `case` <span id="indent-when-to-case"></span>
 
 Indent `when` as deep as `case`.
 
-[source,ruby]
-----
-# bad
-case
-  when song.name == 'Misty'
-    puts 'Not again!'
-  when song.duration > 120
-    puts 'Too long!'
-  when Time.now.hour > 21
-    puts "It's too late"
-  else
-    song.play
-end
+    # bad
+    case
+      when song.name == 'Misty'
+        puts 'Not again!'
+      when song.duration > 120
+        puts 'Too long!'
+      when Time.now.hour > 21
+        puts "It's too late"
+      else
+        song.play
+    end
 
-# good
-case
-when song.name == 'Misty'
-  puts 'Not again!'
-when song.duration > 120
-  puts 'Too long!'
-when Time.now.hour > 21
-  puts "It's too late"
-else
-  song.play
-end
-----
+    # good
+    case
+    when song.name == 'Misty'
+      puts 'Not again!'
+    when song.duration > 120
+      puts 'Too long!'
+    when Time.now.hour > 21
+      puts "It's too late"
+    else
+      song.play
+    end
 
-.A Bit of History
-****
-This is the style established in both "The Ruby Programming Language" and "Programming Ruby".
-Historically it is derived from the fact that `case` and `switch` statements are not blocks, hence should not be indented, and the `when` and `else` keywords are labels (compiled in the C language, they are literally labels for `JMP` calls).
-****
+This is the style established in both "The Ruby Programming Language" and "Programming Ruby". Historically it is derived from the fact that `case` and `switch` statements are not blocks, hence should not be indented, and the `when` and `else` keywords are labels (compiled in the C language, they are literally labels for `JMP` calls).
 
-=== Indent Conditional Assignment [[indent-conditional-assignment]]
+## Indent Conditional Assignment <span id="indent-conditional-assignment"></span>
 
 When assigning the result of a conditional expression to a variable, preserve the usual alignment of its branches.
 
-[source,ruby]
-----
-# bad - pretty convoluted
-kind = case year
-when 1850..1889 then 'Blues'
-when 1890..1909 then 'Ragtime'
-when 1910..1929 then 'New Orleans Jazz'
-when 1930..1939 then 'Swing'
-when 1940..1950 then 'Bebop'
-else 'Jazz'
-end
+    # bad - pretty convoluted
+    kind = case year
+    when 1850..1889 then 'Blues'
+    when 1890..1909 then 'Ragtime'
+    when 1910..1929 then 'New Orleans Jazz'
+    when 1930..1939 then 'Swing'
+    when 1940..1950 then 'Bebop'
+    else 'Jazz'
+    end
 
-result = if some_cond
-  calc_something
-else
-  calc_something_else
-end
+    result = if some_cond
+      calc_something
+    else
+      calc_something_else
+    end
 
-# good - it's apparent what's going on
-kind = case year
-       when 1850..1889 then 'Blues'
-       when 1890..1909 then 'Ragtime'
-       when 1910..1929 then 'New Orleans Jazz'
-       when 1930..1939 then 'Swing'
-       when 1940..1950 then 'Bebop'
-       else 'Jazz'
-       end
+    # good - it's apparent what's going on
+    kind = case year
+           when 1850..1889 then 'Blues'
+           when 1890..1909 then 'Ragtime'
+           when 1910..1929 then 'New Orleans Jazz'
+           when 1930..1939 then 'Swing'
+           when 1940..1950 then 'Bebop'
+           else 'Jazz'
+           end
 
-result = if some_cond
-           calc_something
-         else
-           calc_something_else
-         end
+    result = if some_cond
+               calc_something
+             else
+               calc_something_else
+             end
 
-# good (and a bit more width efficient)
-kind =
-  case year
-  when 1850..1889 then 'Blues'
-  when 1890..1909 then 'Ragtime'
-  when 1910..1929 then 'New Orleans Jazz'
-  when 1930..1939 then 'Swing'
-  when 1940..1950 then 'Bebop'
-  else 'Jazz'
-  end
+    # good (and a bit more width efficient)
+    kind =
+      case year
+      when 1850..1889 then 'Blues'
+      when 1890..1909 then 'Ragtime'
+      when 1910..1929 then 'New Orleans Jazz'
+      when 1930..1939 then 'Swing'
+      when 1940..1950 then 'Bebop'
+      else 'Jazz'
+      end
 
-result =
-  if some_cond
-    calc_something
-  else
-    calc_something_else
-  end
-----
+    result =
+      if some_cond
+        calc_something
+      else
+        calc_something_else
+      end
 
-=== Empty Lines between Methods [[empty-lines-between-methods]]
+## Empty Lines between Methods <span id="empty-lines-between-methods"></span>
 
 Use empty lines between method definitions and also to break up methods into logical paragraphs internally.
 
-[source,ruby]
-----
-# bad
-def some_method
-  data = initialize(options)
-  data.manipulate!
-  data.result
-end
-def some_other_method
-  result
-end
+    # bad
+    def some_method
+      data = initialize(options)
+      data.manipulate!
+      data.result
+    end
+    def some_other_method
+      result
+    end
 
-# good
-def some_method
-  data = initialize(options)
+    # good
+    def some_method
+      data = initialize(options)
 
-  data.manipulate!
+      data.manipulate!
 
-  data.result
-end
+      data.result
+    end
 
-def some_other_method
-  result
-end
-----
+    def some_other_method
+      result
+    end
 
-=== Two or More Empty Lines [[two-or-more-empty-lines]]
+## Two or More Empty Lines <span id="two-or-more-empty-lines"></span>
 
-Don't use several empty lines in a row.
+Don’t use several empty lines in a row.
 
-[source,ruby]
-----
-# bad - It has two empty lines.
-some_method
+    # bad - It has two empty lines.
+    some_method
 
 
-some_method
+    some_method
 
-# good
-some_method
+    # good
+    some_method
 
-some_method
-----
+    some_method
 
-=== Empty Lines around Attribute Accessor [[empty-lines-around-attribute-accessor]]
+## Empty Lines around Attribute Accessor <span id="empty-lines-around-attribute-accessor"></span>
 
 Use empty lines around attribute accessor.
 
-[source,ruby]
-----
-# bad
-class Foo
-  attr_reader :foo
-  def foo
-    # do something...
-  end
-end
+    # bad
+    class Foo
+      attr_reader :foo
+      def foo
+        # do something...
+      end
+    end
 
-# good
-class Foo
-  attr_reader :foo
+    # good
+    class Foo
+      attr_reader :foo
 
-  def foo
-    # do something...
-  end
-end
-----
+      def foo
+        # do something...
+      end
+    end
 
-=== Empty Lines around Access Modifier [[empty-lines-around-access-modifier]]
+## Empty Lines around Access Modifier <span id="empty-lines-around-access-modifier"></span>
 
 Use empty lines around access modifier.
 
-[source,ruby]
-----
-# bad
-class Foo
-  def bar; end
-  private
-  def baz; end
-end
+    # bad
+    class Foo
+      def bar; end
+      private
+      def baz; end
+    end
 
-# good
-class Foo
-  def bar; end
+    # good
+    class Foo
+      def bar; end
 
-  private
+      private
 
-  def baz; end
-end
-----
+      def baz; end
+    end
 
-=== Empty Lines around Bodies [[empty-lines-around-bodies]]
+## Empty Lines around Bodies <span id="empty-lines-around-bodies"></span>
 
-Don't use empty lines around method, class, module, block bodies.
+Don’t use empty lines around method, class, module, block bodies.
 
-[source,ruby]
-----
-# bad
-class Foo
+    # bad
+    class Foo
 
-  def foo
+      def foo
 
-    begin
+        begin
 
-      do_something do
+          do_something do
 
-        something
+            something
+
+          end
+
+        rescue
+
+          something
+
+        end
+
+        true
 
       end
 
-    rescue
-
-      something
-
     end
 
-    true
-
-  end
-
-end
-
-# good
-class Foo
-  def foo
-    begin
-      do_something do
-        something
+    # good
+    class Foo
+      def foo
+        begin
+          do_something do
+            something
+          end
+        rescue
+          something
+        end
       end
-    rescue
-      something
     end
-  end
-end
-----
 
-=== Trailing Comma in Method Arguments [[no-trailing-params-comma]]
+## Trailing Comma in Method Arguments <span id="no-trailing-params-comma"></span>
 
 Avoid comma after the last parameter in a method call, especially when the parameters are not on separate lines.
 
-[source,ruby]
-----
-# bad - easier to move/add/remove parameters, but still not preferred
-some_method(
-  size,
-  count,
-  color,
-)
+    # bad - easier to move/add/remove parameters, but still not preferred
+    some_method(
+      size,
+      count,
+      color,
+    )
 
-# bad
-some_method(size, count, color, )
+    # bad
+    some_method(size, count, color, )
 
-# good
-some_method(size, count, color)
-----
+    # good
+    some_method(size, count, color)
 
-=== Spaces around Equals [[spaces-around-equals]]
+## Spaces around Equals <span id="spaces-around-equals"></span>
 
 Use spaces around the `=` operator when assigning default values to method parameters:
 
-[source,ruby]
-----
-# bad
-def some_method(arg1=:default, arg2=nil, arg3=[])
-  # do something...
-end
+    # bad
+    def some_method(arg1=:default, arg2=nil, arg3=[])
+      # do something...
+    end
 
-# good
-def some_method(arg1 = :default, arg2 = nil, arg3 = [])
-  # do something...
-end
-----
+    # good
+    def some_method(arg1 = :default, arg2 = nil, arg3 = [])
+      # do something...
+    end
 
-While several Ruby books suggest the first style, the second is much more
-prominent in practice (and arguably a bit more readable).
+While several Ruby books suggest the first style, the second is much more prominent in practice (and arguably a bit more readable).
 
-=== Line Continuation in Expressions [[no-trailing-backslash]]
+## Line Continuation in Expressions <span id="no-trailing-backslash"></span>
 
-Avoid line continuation with `\` where not required.
-In practice, avoid using line continuations for anything but string concatenation.
+Avoid line continuation with `\` where not required. In practice, avoid using line continuations for anything but string concatenation.
 
-[source,ruby]
-----
-# bad (\ is not needed here)
-result = 1 - \
-         2
+    # bad (\ is not needed here)
+    result = 1 - \
+             2
 
-# bad (\ is required, but still ugly as hell)
-result = 1 \
-         - 2
+    # bad (\ is required, but still ugly as hell)
+    result = 1 \
+             - 2
 
-# good
-result = 1 -
-         2
+    # good
+    result = 1 -
+             2
 
-long_string = 'First part of the long string' \
-              ' and second part of the long string'
-----
+    long_string = 'First part of the long string' \
+                  ' and second part of the long string'
 
-=== Multi-line Method Chains [[consistent-multi-line-chains]]
+## Multi-line Method Chains <span id="consistent-multi-line-chains"></span>
 
-Adopt a consistent multi-line method chaining style.
-There are two popular styles in the Ruby community, both of which are considered good - leading `.`  and trailing `.`.
+Adopt a consistent multi-line method chaining style. There are two popular styles in the Ruby community, both of which are considered good - leading `.` and trailing `.`.
 
-==== Leading `.` [[leading-dot-in-multi-line-chains]]
+### Leading `.` <span id="leading-dot-in-multi-line-chains"></span>
 
 When continuing a chained method call on another line, keep the `.` on the second line.
 
-[source,ruby]
-----
-# bad - need to consult first line to understand second line
-one.two.three.
-  four
+    # bad - need to consult first line to understand second line
+    one.two.three.
+      four
 
-# good - it's immediately clear what's going on the second line
-one.two.three
-  .four
-----
+    # good - it's immediately clear what's going on the second line
+    one.two.three
+      .four
 
-==== Trailing `.` [[trailing-dot-in-multi-line-chains]]
+### Trailing `.` <span id="trailing-dot-in-multi-line-chains"></span>
 
 When continuing a chained method call on another line, include the `.` on the first line to indicate that the expression continues.
 
-[source,ruby]
-----
-# bad - need to read ahead to the second line to know that the chain continues
-one.two.three
-  .four
+    # bad - need to read ahead to the second line to know that the chain continues
+    one.two.three
+      .four
 
-# good - it's immediately clear that the expression continues beyond the first line
-one.two.three.
-  four
-----
+    # good - it's immediately clear that the expression continues beyond the first line
+    one.two.three.
+      four
 
-A discussion on the merits of both alternative styles can be found https://github.com/rubocop/ruby-style-guide/pull/176[here].
+A discussion on the merits of both alternative styles can be found [here](https://github.com/rubocop/ruby-style-guide/pull/176).
 
-=== Method Arguments Alignment [[no-double-indent]]
+## Method Arguments Alignment <span id="no-double-indent"></span>
 
-Align the arguments of a method call if they span more than one line.
-When aligning arguments is not appropriate due to line-length constraints, single indent for the lines after the first is also acceptable.
+Align the arguments of a method call if they span more than one line. When aligning arguments is not appropriate due to line-length constraints, single indent for the lines after the first is also acceptable.
 
-[source,ruby]
-----
-# starting point (line is too long)
-def send_mail(source)
-  Mailer.deliver(to: 'bob@example.com', from: 'us@example.com', subject: 'Important message', body: source.text)
-end
+    # starting point (line is too long)
+    def send_mail(source)
+      Mailer.deliver(to: 'bob@example.com', from: 'us@example.com', subject: 'Important message', body: source.text)
+    end
 
-# bad (double indent)
-def send_mail(source)
-  Mailer.deliver(
-      to: 'bob@example.com',
-      from: 'us@example.com',
-      subject: 'Important message',
-      body: source.text)
-end
+    # bad (double indent)
+    def send_mail(source)
+      Mailer.deliver(
+          to: 'bob@example.com',
+          from: 'us@example.com',
+          subject: 'Important message',
+          body: source.text)
+    end
 
-# good
-def send_mail(source)
-  Mailer.deliver(to: 'bob@example.com',
-                 from: 'us@example.com',
-                 subject: 'Important message',
-                 body: source.text)
-end
+    # good
+    def send_mail(source)
+      Mailer.deliver(to: 'bob@example.com',
+                     from: 'us@example.com',
+                     subject: 'Important message',
+                     body: source.text)
+    end
 
-# good (normal indent)
-def send_mail(source)
-  Mailer.deliver(
-    to: 'bob@example.com',
-    from: 'us@example.com',
-    subject: 'Important message',
-    body: source.text
-  )
-end
-----
+    # good (normal indent)
+    def send_mail(source)
+      Mailer.deliver(
+        to: 'bob@example.com',
+        from: 'us@example.com',
+        subject: 'Important message',
+        body: source.text
+      )
+    end
 
-=== Implicit Options Hash [[no-braces-opts-hash]]
+## Implicit Options Hash <span id="no-braces-opts-hash"></span>
 
-IMPORTANT: As of Ruby 2.7 braces around an options hash are no longer
-optional.
+As of Ruby 2.7 braces around an options hash are no longer optional.
 
 Omit the outer braces around an implicit options hash.
 
-[source,ruby]
-----
-# bad
-user.set({ name: 'John', age: 45, permissions: { read: true } })
+    # bad
+    user.set({ name: 'John', age: 45, permissions: { read: true } })
 
-# good
-user.set(name: 'John', age: 45, permissions: { read: true })
-----
+    # good
+    user.set(name: 'John', age: 45, permissions: { read: true })
 
-=== DSL Method Calls [[no-dsl-decorating]]
+## DSL Method Calls <span id="no-dsl-decorating"></span>
 
 Omit both the outer braces and parentheses for methods that are part of an internal DSL.
 
-[source,ruby]
-----
-class Person < ActiveRecord::Base
-  # bad
-  validates(:name, { presence: true, length: { within: 1..10 } })
+    class Person < ActiveRecord::Base
+      # bad
+      validates(:name, { presence: true, length: { within: 1..10 } })
 
-  # good
-  validates :name, presence: true, length: { within: 1..10 }
-end
-----
+      # good
+      validates :name, presence: true, length: { within: 1..10 }
+    end
 
-=== Space in Method Calls [[parens-no-spaces]]
+## Space in Method Calls <span id="parens-no-spaces"></span>
 
 Do not put a space between a method name and the opening parenthesis.
 
-[source,ruby]
-----
-# bad
-puts (x + y)
+    # bad
+    puts (x + y)
 
-# good
-puts(x + y)
-----
+    # good
+    puts(x + y)
 
-=== Space in Brackets Access
+## Space in Brackets Access
 
 Do not put a space between a receiver name and the opening brackets.
 
-[source,ruby]
-----
-# bad
-collection [index_or_key]
+    # bad
+    collection [index_or_key]
 
-# good
-collection[index_or_key]
-----
+    # good
+    collection[index_or_key]
 
-=== Multi-line Arrays Alignment [[align-multiline-arrays]]
+## Multi-line Arrays Alignment <span id="align-multiline-arrays"></span>
 
 Align the elements of array literals spanning multiple lines.
 
-[source,ruby]
-----
-# bad - single indent
-menu_item = %w[Spam Spam Spam Spam Spam Spam Spam Spam
-  Baked beans Spam Spam Spam Spam Spam]
+    # bad - single indent
+    menu_item = %w[Spam Spam Spam Spam Spam Spam Spam Spam
+      Baked beans Spam Spam Spam Spam Spam]
 
-# good
-menu_item = %w[
-  Spam Spam Spam Spam Spam Spam Spam Spam
-  Baked beans Spam Spam Spam Spam Spam
-]
+    # good
+    menu_item = %w[
+      Spam Spam Spam Spam Spam Spam Spam Spam
+      Baked beans Spam Spam Spam Spam Spam
+    ]
 
-# good
-menu_item =
-  %w[Spam Spam Spam Spam Spam Spam Spam Spam
-     Baked beans Spam Spam Spam Spam Spam]
-----
+    # good
+    menu_item =
+      %w[Spam Spam Spam Spam Spam Spam Spam Spam
+         Baked beans Spam Spam Spam Spam Spam]
 
-== Naming Conventions
+# Naming Conventions
 
-[quote, Phil Karlton]
-____
-The only real difficulties in programming are cache invalidation and naming things.
-____
+> The only real difficulties in programming are cache invalidation and naming things.
+>
+> —  Phil Karlton
 
-=== English for Identifiers [[english-identifiers]]
+## English for Identifiers <span id="english-identifiers"></span>
 
 Name identifiers in English.
 
-[source,ruby]
-----
-# bad - identifier is a Bulgarian word, using non-ascii (Cyrillic) characters
-заплата = 1_000
+    # bad - identifier is a Bulgarian word, using non-ascii (Cyrillic) characters
+    заплата = 1_000
 
-# bad - identifier is a Bulgarian word, written with Latin letters (instead of Cyrillic)
-zaplata = 1_000
+    # bad - identifier is a Bulgarian word, written with Latin letters (instead of Cyrillic)
+    zaplata = 1_000
 
-# good
-salary = 1_000
-----
+    # good
+    salary = 1_000
 
-=== Snake Case for Symbols, Methods and Variables [[snake-case-symbols-methods-vars]]
+## Snake Case for Symbols, Methods and Variables <span id="snake-case-symbols-methods-vars"></span>
 
 Use `snake_case` for symbols, methods and variables.
 
-[source,ruby]
-----
-# bad
-:'some symbol'
-:SomeSymbol
-:someSymbol
+    # bad
+    :'some symbol'
+    :SomeSymbol
+    :someSymbol
 
-someVar = 5
+    someVar = 5
 
-def someMethod
-  # some code
-end
+    def someMethod
+      # some code
+    end
 
-def SomeMethod
-  # some code
-end
+    def SomeMethod
+      # some code
+    end
 
-# good
-:some_symbol
+    # good
+    :some_symbol
 
-some_var = 5
+    some_var = 5
 
-def some_method
-  # some code
-end
-----
+    def some_method
+      # some code
+    end
 
-=== Identifiers with a Numeric Suffix [[snake-case-symbols-methods-vars-with-numbers]]
+## Identifiers with a Numeric Suffix <span id="snake-case-symbols-methods-vars-with-numbers"></span>
 
 Do not separate numbers from letters on symbols, methods and variables.
 
-[source,ruby]
-----
-# bad
-:some_sym_1
+    # bad
+    :some_sym_1
 
-some_var_1 = 1
+    some_var_1 = 1
 
-var_10 = 10
+    var_10 = 10
 
-def some_method_1
-  # some code
-end
+    def some_method_1
+      # some code
+    end
 
-# good
-:some_sym1
+    # good
+    :some_sym1
 
-some_var1 = 1
+    some_var1 = 1
 
-var10 = 10
+    var10 = 10
 
-def some_method1
-  # some code
-end
-----
+    def some_method1
+      # some code
+    end
 
-=== CapitalCase for Classes and Modules [[camelcase-classes]]
+## CapitalCase for Classes and Modules <span id="camelcase-classes"></span>
 
-NOTE: `CapitalCase` is also known as `UpperCamelCase, `CapitalWords`
-and `PascalCase`.
+`CapitalCase` is also known as `` UpperCamelCase, `CapitalWords `` and `PascalCase`.
 
-Use `CapitalCase` for classes and modules.
-(Keep acronyms like HTTP, RFC, XML uppercase).
+Use `CapitalCase` for classes and modules. (Keep acronyms like HTTP, RFC, XML uppercase).
 
-[source,ruby]
-----
-# bad
-class Someclass
-  # some code
-end
+    # bad
+    class Someclass
+      # some code
+    end
 
-class Some_Class
-  # some code
-end
+    class Some_Class
+      # some code
+    end
 
-class SomeXml
-  # some code
-end
+    class SomeXml
+      # some code
+    end
 
-class XmlSomething
-  # some code
-end
+    class XmlSomething
+      # some code
+    end
 
-# good
-class SomeClass
-  # some code
-end
+    # good
+    class SomeClass
+      # some code
+    end
 
-class SomeXML
-  # some code
-end
+    class SomeXML
+      # some code
+    end
 
-class XMLSomething
-  # some code
-end
-----
+    class XMLSomething
+      # some code
+    end
 
-=== Snake Case for Files [[snake-case-files]]
+## Snake Case for Files <span id="snake-case-files"></span>
 
 Use `snake_case` for naming files, e.g. `hello_world.rb`.
 
-=== Snake Case for Directories [[snake-case-dirs]]
+## Snake Case for Directories <span id="snake-case-dirs"></span>
 
 Use `snake_case` for naming directories, e.g. `lib/hello_world/hello_world.rb`.
 
-=== One Class per File [[one-class-per-file]]
+## One Class per File <span id="one-class-per-file"></span>
 
-Aim to have just a single class/module per source file.
-Name the file name as the class/module, but replacing `CapitalCase` with `snake_case`.
+Aim to have just a single class/module per source file. Name the file name as the class/module, but replacing `CapitalCase` with `snake_case`.
 
-=== Screaming Snake Case for Constants [[screaming-snake-case]]
+## Screaming Snake Case for Constants <span id="screaming-snake-case"></span>
 
-Use `SCREAMING_SNAKE_CASE` for other constants (those that don't refer to classes and modules).
+Use `SCREAMING_SNAKE_CASE` for other constants (those that don’t refer to classes and modules).
 
-[source,ruby]
-----
-# bad
-SomeConst = 5
+    # bad
+    SomeConst = 5
 
-# good
-SOME_CONST = 5
-----
+    # good
+    SOME_CONST = 5
 
-=== Predicate Methods Suffix [[bool-methods-qmark]]
+## Predicate Methods Suffix <span id="bool-methods-qmark"></span>
 
-The names of predicate methods (methods that return a boolean value) should end in a question mark  (i.e. `Array#empty?`).
-Methods that don't return a boolean, shouldn't end in a question mark.
+The names of predicate methods (methods that return a boolean value) should end in a question mark (i.e. `Array#empty?`). Methods that don’t return a boolean, shouldn’t end in a question mark.
 
-[source,ruby]
-----
-# bad
-def even(value)
-end
+    # bad
+    def even(value)
+    end
 
-# good
-def even?(value)
-end
-----
+    # good
+    def even?(value)
+    end
 
-=== Predicate Methods Prefix [[bool-methods-prefix]]
+## Predicate Methods Prefix <span id="bool-methods-prefix"></span>
 
-Avoid prefixing predicate methods with the auxiliary verbs such as `is`, `does`, or `can`.
-These words are redundant and inconsistent with the style of boolean methods in the Ruby core library, such as `empty?` and `include?`.
+Avoid prefixing predicate methods with the auxiliary verbs such as `is`, `does`, or `can`. These words are redundant and inconsistent with the style of boolean methods in the Ruby core library, such as `empty?` and `include?`.
 
-[source,ruby]
-----
-# bad
-class Person
-  def is_tall?
-    true
-  end
+    # bad
+    class Person
+      def is_tall?
+        true
+      end
 
-  def can_play_basketball?
-    false
-  end
+      def can_play_basketball?
+        false
+      end
 
-  def does_like_candy?
-    true
-  end
-end
+      def does_like_candy?
+        true
+      end
+    end
 
-# good
-class Person
-  def tall?
-    true
-  end
+    # good
+    class Person
+      def tall?
+        true
+      end
 
-  def basketball_player?
-    false
-  end
+      def basketball_player?
+        false
+      end
 
-  def likes_candy?
-    true
-  end
-end
-----
+      def likes_candy?
+        true
+      end
+    end
 
-=== Dangerous Method Suffix [[dangerous-method-bang]]
+## Dangerous Method Suffix <span id="dangerous-method-bang"></span>
 
-The names of potentially _dangerous_ methods (i.e. methods that modify `self` or the arguments, `exit!` (doesn't run the finalizers like `exit` does), etc) should end with an exclamation mark if there exists a safe version of that _dangerous_ method.
+The names of potentially *dangerous* methods (i.e. methods that modify `self` or the arguments, `exit!` (doesn’t run the finalizers like `exit` does), etc) should end with an exclamation mark if there exists a safe version of that *dangerous* method.
 
-[source,ruby]
-----
-# bad - there is no matching 'safe' method
-class Person
-  def update!
-  end
-end
+    # bad - there is no matching 'safe' method
+    class Person
+      def update!
+      end
+    end
 
-# good
-class Person
-  def update
-  end
-end
+    # good
+    class Person
+      def update
+      end
+    end
 
-# good
-class Person
-  def update!
-  end
+    # good
+    class Person
+      def update!
+      end
 
-  def update
-  end
-end
-----
+      def update
+      end
+    end
 
-=== Relationship between Safe and Dangerous Methods [[safe-because-unsafe]]
+## Relationship between Safe and Dangerous Methods <span id="safe-because-unsafe"></span>
 
 Define the non-bang (safe) method in terms of the bang (dangerous) one if possible.
 
-[source,ruby]
-----
-class Array
-  def flatten_once!
-    res = []
+    class Array
+      def flatten_once!
+        res = []
 
-    each do |e|
-      [*e].each { |f| res << f }
+        each do |e|
+          [*e].each { |f| res << f }
+        end
+
+        replace(res)
+      end
+
+      def flatten_once
+        dup.flatten_once!
+      end
     end
 
-    replace(res)
-  end
+## Unused Variables Prefix <span id="underscore-unused-vars"></span>
 
-  def flatten_once
-    dup.flatten_once!
-  end
-end
-----
+Prefix with `+_+` unused block parameters and local variables. It’s also acceptable to use just `+_+` (although it’s a bit less descriptive). This convention is recognized by the Ruby interpreter and tools like RuboCop will suppress their unused variable warnings.
 
-=== Unused Variables Prefix [[underscore-unused-vars]]
+    # bad
+    result = hash.map { |k, v| v + 1 }
 
-Prefix with `+_+` unused block parameters and local variables.
-It's also acceptable to use just `+_+` (although it's a bit less descriptive).
-This convention is recognized by the Ruby interpreter and tools like RuboCop will suppress their unused variable warnings.
+    def something(x)
+      unused_var, used_var = something_else(x)
+      # some code
+    end
 
-[source,ruby]
-----
-# bad
-result = hash.map { |k, v| v + 1 }
+    # good
+    result = hash.map { |_k, v| v + 1 }
 
-def something(x)
-  unused_var, used_var = something_else(x)
-  # some code
-end
+    def something(x)
+      _unused_var, used_var = something_else(x)
+      # some code
+    end
 
-# good
-result = hash.map { |_k, v| v + 1 }
+    # good
+    result = hash.map { |_, v| v + 1 }
 
-def something(x)
-  _unused_var, used_var = something_else(x)
-  # some code
-end
+    def something(x)
+      _, used_var = something_else(x)
+      # some code
+    end
 
-# good
-result = hash.map { |_, v| v + 1 }
+## `other` Parameter <span id="other-arg"></span>
 
-def something(x)
-  _, used_var = something_else(x)
-  # some code
-end
-----
-
-=== `other` Parameter [[other-arg]]
-
-When defining binary operators and operator-alike methods, name the parameter `other` for operators with "symmetrical" semantics of operands.
-Symmetrical semantics means both sides of the operator are typically of the same or coercible types.
+When defining binary operators and operator-alike methods, name the parameter `other` for operators with "symmetrical" semantics of operands. Symmetrical semantics means both sides of the operator are typically of the same or coercible types.
 
 Operators and operator-alike methods with symmetrical semantics (the parameter should be named `other`): `+`, `-`, `+*+`, `/`, `%`, `**`, `==`, `>`, `<`, `|`, `&`, `^`, `eql?`, `equal?`.
 
-Operators with non-symmetrical semantics (the parameter should *not* be named `other`): `<<`, `[]` (collection/item relations between operands), `===` (pattern/matchable relations).
+Operators with non-symmetrical semantics (the parameter should **not** be named `other`): `<<`, `[]` (collection/item relations between operands), `===` (pattern/matchable relations).
 
-Note that the rule should be followed *only* if both sides of the operator have the same semantics.
-Prominent exception in Ruby core is, for example, `Array#*(int)`.
+Note that the rule should be followed **only** if both sides of the operator have the same semantics. Prominent exception in Ruby core is, for example, `Array#*(int)`.
 
-[source,ruby]
-----
-# good
-def +(other)
-  # body omitted
-end
+    # good
+    def +(other)
+      # body omitted
+    end
 
-# bad
-def <<(other)
-  @internal << other
-end
+    # bad
+    def <<(other)
+      @internal << other
+    end
 
-# good
-def <<(item)
-  @internal << item
-end
+    # good
+    def <<(item)
+      @internal << item
+    end
 
-# bad
-# Returns some string multiplied `other` times
-def *(other)
-  # body omitted
-end
+    # bad
+    # Returns some string multiplied `other` times
+    def *(other)
+      # body omitted
+    end
 
-# good
-# Returns some string multiplied `num` times
-def *(num)
-  # body omitted
-end
-----
+    # good
+    # Returns some string multiplied `num` times
+    def *(num)
+      # body omitted
+    end
 
-== Flow of Control
+# Flow of Control
 
-=== `for` Loops [[no-for-loops]]
+## `for` Loops <span id="no-for-loops"></span>
 
-Do not use `for`, unless you know exactly why.
-Most of the time iterators should be used instead.
-`for` is implemented in terms of `each` (so you're adding a level of indirection), but with a twist - `for` doesn't introduce a new scope (unlike `each`) and variables defined in its block will be visible outside it.
+Do not use `for`, unless you know exactly why. Most of the time iterators should be used instead. `for` is implemented in terms of `each` (so you’re adding a level of indirection), but with a twist - `for` doesn’t introduce a new scope (unlike `each`) and variables defined in its block will be visible outside it.
 
-[source,ruby]
-----
-arr = [1, 2, 3]
+    arr = [1, 2, 3]
 
-# bad
-for elem in arr do
-  puts elem
-end
+    # bad
+    for elem in arr do
+      puts elem
+    end
 
-# note that elem is accessible outside of the for loop
-elem # => 3
+    # note that elem is accessible outside of the for loop
+    elem # => 3
 
-# good
-arr.each { |elem| puts elem }
+    # good
+    arr.each { |elem| puts elem }
 
-# elem is not accessible outside each block
-elem # => NameError: undefined local variable or method `elem'
-----
+    # elem is not accessible outside each block
+    elem # => NameError: undefined local variable or method `elem'
 
-=== `then` in Multi-line Expression [[no-then]]
+## `then` in Multi-line Expression <span id="no-then"></span>
 
 Do not use `then` for multi-line `if`/`unless`/`when`/`in`.
 
-[source,ruby]
-----
-# bad
-if some_condition then
-  # body omitted
-end
+    # bad
+    if some_condition then
+      # body omitted
+    end
 
-# bad
-case foo
-when bar then
-  # body omitted
-end
+    # bad
+    case foo
+    when bar then
+      # body omitted
+    end
 
-# bad
-case expression
-in pattern then
-  # body omitted
-end
+    # bad
+    case expression
+    in pattern then
+      # body omitted
+    end
 
-# good
-if some_condition
-  # body omitted
-end
+    # good
+    if some_condition
+      # body omitted
+    end
 
-# good
-case foo
-when bar
-  # body omitted
-end
+    # good
+    case foo
+    when bar
+      # body omitted
+    end
 
-# good
-case expression
-in pattern
-  # body omitted
-end
-----
+    # good
+    case expression
+    in pattern
+      # body omitted
+    end
 
-=== Condition Placement [[same-line-condition]]
+## Condition Placement <span id="same-line-condition"></span>
 
 Always put the condition on the same line as the `if`/`unless` in a multi-line conditional.
 
-[source,ruby]
-----
-# bad
-if
-  some_condition
-  do_something
-  do_something_else
-end
+    # bad
+    if
+      some_condition
+      do_something
+      do_something_else
+    end
 
-# good
-if some_condition
-  do_something
-  do_something_else
-end
-----
+    # good
+    if some_condition
+      do_something
+      do_something_else
+    end
 
-=== Ternary Operator vs `if` [[ternary-operator]]
+## Ternary Operator vs `if` <span id="ternary-operator"></span>
 
-Prefer the ternary operator(`?:`) over `if/then/else/end` constructs.
-It's more common and obviously more concise.
+Prefer the ternary operator(`?:`) over `if/then/else/end` constructs. It’s more common and obviously more concise.
 
-[source,ruby]
-----
-# bad
-result = if some_condition then something else something_else end
+    # bad
+    result = if some_condition then something else something_else end
 
-# good
-result = some_condition ? something : something_else
-----
+    # good
+    result = some_condition ? something : something_else
 
-=== Nested Ternary Operators [[no-nested-ternary]]
+## Nested Ternary Operators <span id="no-nested-ternary"></span>
 
-Use one expression per branch in a ternary operator.
-This also means that ternary operators must not be nested.
-Prefer `if/else` constructs in these cases.
+Use one expression per branch in a ternary operator. This also means that ternary operators must not be nested. Prefer `if/else` constructs in these cases.
 
-[source,ruby]
-----
-# bad
-some_condition ? (nested_condition ? nested_something : nested_something_else) : something_else
+    # bad
+    some_condition ? (nested_condition ? nested_something : nested_something_else) : something_else
 
-# good
-if some_condition
-  nested_condition ? nested_something : nested_something_else
-else
-  something_else
-end
-----
+    # good
+    if some_condition
+      nested_condition ? nested_something : nested_something_else
+    else
+      something_else
+    end
 
-=== Semicolon in `if` [[no-semicolon-ifs]]
+## Semicolon in `if` <span id="no-semicolon-ifs"></span>
 
 Do not use `if x; ...`. Use the ternary operator instead.
 
-[source,ruby]
-----
-# bad
-result = if some_condition; something else something_else end
+    # bad
+    result = if some_condition; something else something_else end
 
-# good
-result = some_condition ? something : something_else
-----
+    # good
+    result = some_condition ? something : something_else
 
-=== `case` vs `if-else` [[case-vs-if-else]]
+## `case` vs `if-else` <span id="case-vs-if-else"></span>
 
 Prefer `case` over `if-elsif` when compared value is the same in each clause.
 
-[source,ruby]
-----
-# bad
-if status == :active
-  perform_action
-elsif status == :inactive || status == :hibernating
-  check_timeout
-else
-  final_action
-end
+    # bad
+    if status == :active
+      perform_action
+    elsif status == :inactive || status == :hibernating
+      check_timeout
+    else
+      final_action
+    end
 
-# good
-case status
-when :active
-  perform_action
-when :inactive, :hibernating
-  check_timeout
-else
-  final_action
-end
-----
+    # good
+    case status
+    when :active
+      perform_action
+    when :inactive, :hibernating
+      check_timeout
+    else
+      final_action
+    end
 
-=== Returning Result from `if`/`case` [[use-if-case-returns]]
+## Returning Result from `if`/`case` <span id="use-if-case-returns"></span>
 
 Leverage the fact that `if` and `case` are expressions which return a result.
 
-[source,ruby]
-----
-# bad
-if condition
-  result = x
-else
-  result = y
-end
+    # bad
+    if condition
+      result = x
+    else
+      result = y
+    end
 
-# good
-result =
-  if condition
-    x
-  else
-    y
-  end
-----
+    # good
+    result =
+      if condition
+        x
+      else
+        y
+      end
 
-=== One-line Cases [[one-line-cases]]
+## One-line Cases <span id="one-line-cases"></span>
 
 Use `when x then ...` for one-line cases.
 
-NOTE: The alternative syntax `when x: ...` has been removed as of Ruby 1.9.
+The alternative syntax `when x: ...` has been removed as of Ruby 1.9.
 
-=== Semicolon in `when` [[no-when-semicolons]]
+## Semicolon in `when` <span id="no-when-semicolons"></span>
 
 Do not use `when x; ...`. See the previous rule.
 
-=== Semicolon in `in` [[no-in-pattern-semicolons]]
+## Semicolon in `in` <span id="no-in-pattern-semicolons"></span>
 
 Do not use `in pattern; ...`. Use `in pattern then ...` for one-line `in` pattern branches.
 
-[source,ruby]
-----
-# bad
-case expression
-in pattern; do_something
-end
+    # bad
+    case expression
+    in pattern; do_something
+    end
 
-# good
-case expression
-in pattern then do_something
-end
-----
+    # good
+    case expression
+    in pattern then do_something
+    end
 
-=== `!` vs `not` [[bang-not-not]]
+## `!` vs `not` <span id="bang-not-not"></span>
 
 Use `!` instead of `not`.
 
-[source,ruby]
-----
-# bad - parentheses are required because of op precedence
-x = (not something)
+    # bad - parentheses are required because of op precedence
+    x = (not something)
 
-# good
-x = !something
-----
+    # good
+    x = !something
 
-=== Double Negation [[no-bang-bang]]
+## Double Negation <span id="no-bang-bang"></span>
 
 Avoid unnecessary uses of `!!`
 
-`!!` converts a value to boolean, but you don't need this explicit conversion in the condition of a control expression; using it only obscures your intention.
+`!!` converts a value to boolean, but you don’t need this explicit conversion in the condition of a control expression; using it only obscures your intention.
 
 Consider using it only when there is a valid reason to restrict the result `true` or `false`. Examples include outputting to a particular format or API like JSON, or as the return value of a `predicate?` method. In these cases, also consider doing a nil check instead: `!something.nil?`.
 
-[source,ruby]
-----
-# bad
-x = 'test'
-# obscure nil check
-if !!x
-  # body omitted
-end
+    # bad
+    x = 'test'
+    # obscure nil check
+    if !!x
+      # body omitted
+    end
 
-# good
-x = 'test'
-if x
-  # body omitted
-end
+    # good
+    x = 'test'
+    if x
+      # body omitted
+    end
 
-# good
-def named?
-  !name.nil?
-end
+    # good
+    def named?
+      !name.nil?
+    end
 
-# good
-def banned?
-  !!banned_until&.future?
-end
-----
+    # good
+    def banned?
+      !!banned_until&.future?
+    end
 
-=== `and`/`or` [[no-and-or-or]]
+## `and`/`or` <span id="no-and-or-or"></span>
 
-The `and` and `or` keywords are banned.
-The minimal added readability is just not worth the high probability of introducing subtle bugs.
-For boolean expressions, always use `&&` and `||` instead.
-For flow control, use `if` and `unless`; `&&` and `||` are also acceptable but less clear.
+The `and` and `or` keywords are banned. The minimal added readability is just not worth the high probability of introducing subtle bugs. For boolean expressions, always use `&&` and `||` instead. For flow control, use `if` and `unless`; `&&` and `||` are also acceptable but less clear.
 
-[source,ruby]
-----
-# bad
-# boolean expression
-ok = got_needed_arguments and arguments_are_valid
+    # bad
+    # boolean expression
+    ok = got_needed_arguments and arguments_are_valid
 
-# control flow
-document.save or raise("Failed to save document!")
+    # control flow
+    document.save or raise("Failed to save document!")
 
-# good
-# boolean expression
-ok = got_needed_arguments && arguments_are_valid
+    # good
+    # boolean expression
+    ok = got_needed_arguments && arguments_are_valid
 
-# control flow
-raise("Failed to save document!") unless document.save
+    # control flow
+    raise("Failed to save document!") unless document.save
 
-# ok
-# control flow
-document.save || raise("Failed to save document!")
-----
+    # ok
+    # control flow
+    document.save || raise("Failed to save document!")
 
-.Why Ban `and` and `or`?
-****
-The main reason is very simple - they add a lot of cognitive overhead, as they don't behave like similarly named operators in other languages.
+The main reason is very simple - they add a lot of cognitive overhead, as they don’t behave like similarly named operators in other languages.
 
 First of all, `and` and `or` operators have lower precedence than the `=` operator, whereas the `&&` and `||` operators have higher precedence than the `=` operator, based on order of operations.
 
-[source,ruby]
-----
-foo = true and false # results in foo being equal to true. Equivalent to ( foo = true ) and false
-bar = false or true  # results in bar being equal to false. Equivalent to ( bar = false ) or true
-----
+    foo = true and false # results in foo being equal to true. Equivalent to ( foo = true ) and false
+    bar = false or true  # results in bar being equal to false. Equivalent to ( bar = false ) or true
 
-Also `&&` has higher precedence than `||`, where as `and` and `or` have the same one. Funny enough, even though `and` and `or`
-were inspired by Perl, they don't have different precedence in Perl.
+Also `&&` has higher precedence than `||`, where as `and` and `or` have the same one. Funny enough, even though `and` and `or` were inspired by Perl, they don’t have different precedence in Perl.
 
-[source,ruby]
-----
-foo = true or true and false # => false (it's effectively (true or true) and false)
-foz = true || true && false # => true (it's effectively true || (true && false)
-bar = false or true and false # => false (it's effectively (false or true) and false)
-baz = false || true && false # => false (it's effectively false || (true && false))
-----
-****
+    foo = true or true and false # => false (it's effectively (true or true) and false)
+    foz = true || true && false # => true (it's effectively true || (true && false)
+    bar = false or true and false # => false (it's effectively (false or true) and false)
+    baz = false || true && false # => false (it's effectively false || (true && false))
 
-=== Multi-line Ternary Operator [[no-multiline-ternary]]
+## Multi-line Ternary Operator <span id="no-multiline-ternary"></span>
 
 Avoid multi-line `?:` (the ternary operator); use `if`/`unless` instead.
 
-=== `if` as a Modifier [[if-as-a-modifier]]
+## `if` as a Modifier <span id="if-as-a-modifier"></span>
 
-Prefer modifier `if`/`unless` usage when you have a single-line body.
-Another good alternative is the usage of control flow `&&`/`||`.
+Prefer modifier `if`/`unless` usage when you have a single-line body. Another good alternative is the usage of control flow `&&`/`||`.
 
-[source,ruby]
-----
-# bad
-if some_condition
-  do_something
-end
+    # bad
+    if some_condition
+      do_something
+    end
 
-# good
-do_something if some_condition
+    # good
+    do_something if some_condition
 
-# another good option
-some_condition && do_something
-----
+    # another good option
+    some_condition && do_something
 
-=== Multi-line `if` Modifiers [[no-multiline-if-modifiers]]
+## Multi-line `if` Modifiers <span id="no-multiline-if-modifiers"></span>
 
 Avoid modifier `if`/`unless` usage at the end of a non-trivial multi-line block.
 
-[source,ruby]
-----
-# bad
-10.times do
-  # multi-line body omitted
-end if some_condition
+    # bad
+    10.times do
+      # multi-line body omitted
+    end if some_condition
 
-# good
-if some_condition
-  10.times do
-    # multi-line body omitted
-  end
-end
-----
+    # good
+    if some_condition
+      10.times do
+        # multi-line body omitted
+      end
+    end
 
-=== Nested Modifiers [[no-nested-modifiers]]
+## Nested Modifiers <span id="no-nested-modifiers"></span>
 
-Avoid nested modifier `if`/`unless`/`while`/`until` usage.
-Prefer `&&`/`||` if appropriate.
+Avoid nested modifier `if`/`unless`/`while`/`until` usage. Prefer `&&`/`||` if appropriate.
 
-[source,ruby]
-----
-# bad
-do_something if other_condition if some_condition
+    # bad
+    do_something if other_condition if some_condition
 
-# good
-do_something if some_condition && other_condition
-----
+    # good
+    do_something if some_condition && other_condition
 
-=== `if` vs `unless` [[unless-for-negatives]]
+## `if` vs `unless` <span id="unless-for-negatives"></span>
 
 Prefer `unless` over `if` for negative conditions (or control flow `||`).
 
-[source,ruby]
-----
-# bad
-do_something if !some_condition
+    # bad
+    do_something if !some_condition
 
-# bad
-do_something if not some_condition
+    # bad
+    do_something if not some_condition
 
-# good
-do_something unless some_condition
+    # good
+    do_something unless some_condition
 
-# another good option
-some_condition || do_something
-----
+    # another good option
+    some_condition || do_something
 
-=== Using `else` with `unless` [[no-else-with-unless]]
+## Using `else` with `unless` <span id="no-else-with-unless"></span>
 
-Do not use `unless` with `else`.
-Rewrite these with the positive case first.
+Do not use `unless` with `else`. Rewrite these with the positive case first.
 
-[source,ruby]
-----
-# bad
-unless success?
-  puts 'failure'
-else
-  puts 'success'
-end
+    # bad
+    unless success?
+      puts 'failure'
+    else
+      puts 'success'
+    end
 
-# good
-if success?
-  puts 'success'
-else
-  puts 'failure'
-end
-----
+    # good
+    if success?
+      puts 'success'
+    else
+      puts 'failure'
+    end
 
-=== Parentheses around Condition [[no-parens-around-condition]]
+## Parentheses around Condition <span id="no-parens-around-condition"></span>
 
-Don't use parentheses around the condition of a control expression.
+Don’t use parentheses around the condition of a control expression.
 
-[source,ruby]
-----
-# bad
-if (x > 10)
-  # body omitted
-end
+    # bad
+    if (x > 10)
+      # body omitted
+    end
 
-# good
-if x > 10
-  # body omitted
-end
-----
+    # good
+    if x > 10
+      # body omitted
+    end
 
-NOTE: There is an exception to this rule, namely <<safe-assignment-in-condition,safe assignment in condition>>.
+There is an exception to this rule, namely [safe assignment in condition](#safe-assignment-in-condition).
 
-=== Multi-line `while do` [[no-multiline-while-do]]
+## Multi-line `while do` <span id="no-multiline-while-do"></span>
 
 Do not use `while/until condition do` for multi-line `while/until`.
 
-[source,ruby]
-----
-# bad
-while x > 5 do
-  # body omitted
-end
+    # bad
+    while x > 5 do
+      # body omitted
+    end
 
-until x > 5 do
-  # body omitted
-end
+    until x > 5 do
+      # body omitted
+    end
 
-# good
-while x > 5
-  # body omitted
-end
+    # good
+    while x > 5
+      # body omitted
+    end
 
-until x > 5
-  # body omitted
-end
-----
+    until x > 5
+      # body omitted
+    end
 
-=== `while` as a Modifier [[while-as-a-modifier]]
+## `while` as a Modifier <span id="while-as-a-modifier"></span>
 
 Prefer modifier `while/until` usage when you have a single-line body.
 
-[source,ruby]
-----
-# bad
-while some_condition
-  do_something
-end
+    # bad
+    while some_condition
+      do_something
+    end
 
-# good
-do_something while some_condition
-----
+    # good
+    do_something while some_condition
 
-=== `while` vs `until` [[until-for-negatives]]
+## `while` vs `until` <span id="until-for-negatives"></span>
 
 Prefer `until` over `while` for negative conditions.
 
-[source,ruby]
-----
-# bad
-do_something while !some_condition
+    # bad
+    do_something while !some_condition
 
-# good
-do_something until some_condition
-----
+    # good
+    do_something until some_condition
 
-=== Infinite Loop [[infinite-loop]]
+## Infinite Loop <span id="infinite-loop"></span>
 
 Use `Kernel#loop` instead of `while`/`until` when you need an infinite loop.
 
-[source,ruby]
-----
-# bad
-while true
-  do_something
-end
+    # bad
+    while true
+      do_something
+    end
 
-until false
-  do_something
-end
+    until false
+      do_something
+    end
 
-# good
-loop do
-  do_something
-end
-----
+    # good
+    loop do
+      do_something
+    end
 
-=== `loop` with `break` [[loop-with-break]]
+## `loop` with `break` <span id="loop-with-break"></span>
 
 Use `Kernel#loop` with `break` rather than `begin/end/until` or `begin/end/while` for post-loop tests.
 
-[source,ruby]
-----
-# bad
-begin
-  puts val
-  val += 1
-end while val < 0
+    # bad
+    begin
+      puts val
+      val += 1
+    end while val < 0
 
-# good
-loop do
-  puts val
-  val += 1
-  break unless val < 0
-end
-----
+    # good
+    loop do
+      puts val
+      val += 1
+      break unless val < 0
+    end
 
-=== Explicit `return` [[no-explicit-return]]
+## Explicit `return` <span id="no-explicit-return"></span>
 
 Avoid `return` where not required for flow of control.
 
-[source,ruby]
-----
-# bad
-def some_method(some_arr)
-  return some_arr.size
-end
+    # bad
+    def some_method(some_arr)
+      return some_arr.size
+    end
 
-# good
-def some_method(some_arr)
-  some_arr.size
-end
-----
+    # good
+    def some_method(some_arr)
+      some_arr.size
+    end
 
-=== Explicit `self` [[no-self-unless-required]]
+## Explicit `self` <span id="no-self-unless-required"></span>
 
-Avoid `self` where not required.
-(It is only required when calling a `self` write accessor, methods named after reserved words, or overloadable operators.)
+Avoid `self` where not required. (It is only required when calling a `self` write accessor, methods named after reserved words, or overloadable operators.)
 
-[source,ruby]
-----
-# bad
-def ready?
-  if self.last_reviewed_at > self.last_updated_at
-    self.worker.update(self.content, self.options)
-    self.status = :in_progress
-  end
-  self.status == :verified
-end
+    # bad
+    def ready?
+      if self.last_reviewed_at > self.last_updated_at
+        self.worker.update(self.content, self.options)
+        self.status = :in_progress
+      end
+      self.status == :verified
+    end
 
-# good
-def ready?
-  if last_reviewed_at > last_updated_at
-    worker.update(content, options)
-    self.status = :in_progress
-  end
-  status == :verified
-end
-----
+    # good
+    def ready?
+      if last_reviewed_at > last_updated_at
+        worker.update(content, options)
+        self.status = :in_progress
+      end
+      status == :verified
+    end
 
-=== Shadowing Methods [[no-shadowing]]
+## Shadowing Methods <span id="no-shadowing"></span>
 
 As a corollary, avoid shadowing methods with local variables unless they are both equivalent.
 
-[source,ruby]
-----
-class Foo
-  attr_accessor :options
+    class Foo
+      attr_accessor :options
 
-  # ok
-  def initialize(options)
-    self.options = options
-    # both options and self.options are equivalent here
-  end
+      # ok
+      def initialize(options)
+        self.options = options
+        # both options and self.options are equivalent here
+      end
 
-  # bad
-  def do_something(options = {})
-    unless options[:when] == :later
-      output(self.options[:message])
+      # bad
+      def do_something(options = {})
+        unless options[:when] == :later
+          output(self.options[:message])
+        end
+      end
+
+      # good
+      def do_something(params = {})
+        unless params[:when] == :later
+          output(options[:message])
+        end
+      end
     end
-  end
 
-  # good
-  def do_something(params = {})
-    unless params[:when] == :later
-      output(options[:message])
+## Safe Assignment in Condition <span id="safe-assignment-in-condition"></span>
+
+Don’t use the return value of `=` (an assignment) in conditional expressions unless the assignment is wrapped in parentheses. This is a fairly popular idiom among Rubyists that’s sometimes referred to as *safe assignment in condition*.
+
+    # bad (+ a warning)
+    if v = array.grep(/foo/)
+      do_something(v)
+      # some code
     end
-  end
-end
-----
 
-=== Safe Assignment in Condition [[safe-assignment-in-condition]]
+    # good (MRI would still complain, but RuboCop won't)
+    if (v = array.grep(/foo/))
+      do_something(v)
+      # some code
+    end
 
-Don't use the return value of `=` (an assignment) in conditional expressions unless the assignment is wrapped in parentheses.
-This is a fairly popular idiom among Rubyists that's sometimes referred to as _safe assignment in condition_.
+    # good
+    v = array.grep(/foo/)
+    if v
+      do_something(v)
+      # some code
+    end
 
-[source,ruby]
-----
-# bad (+ a warning)
-if v = array.grep(/foo/)
-  do_something(v)
-  # some code
-end
-
-# good (MRI would still complain, but RuboCop won't)
-if (v = array.grep(/foo/))
-  do_something(v)
-  # some code
-end
-
-# good
-v = array.grep(/foo/)
-if v
-  do_something(v)
-  # some code
-end
-----
-
-=== `BEGIN` Blocks [[no-BEGIN-blocks]]
+## `BEGIN` Blocks <span id="no-BEGIN-blocks"></span>
 
 Avoid the use of `BEGIN` blocks.
 
-=== `END` Blocks [[no-END-blocks]]
+## `END` Blocks <span id="no-END-blocks"></span>
 
 Do not use `END` blocks. Use `Kernel#at_exit` instead.
 
-[source,ruby]
-----
-# bad
-END { puts 'Goodbye!' }
+    # bad
+    END { puts 'Goodbye!' }
 
-# good
-at_exit { puts 'Goodbye!' }
-----
+    # good
+    at_exit { puts 'Goodbye!' }
 
-=== Nested Conditionals [[no-nested-conditionals]]
+## Nested Conditionals <span id="no-nested-conditionals"></span>
 
 Avoid use of nested conditionals for flow of control.
 
-Prefer a guard clause when you can assert invalid data.
-A guard clause is a conditional statement at the top of a function that bails out as soon as it can.
+Prefer a guard clause when you can assert invalid data. A guard clause is a conditional statement at the top of a function that bails out as soon as it can.
 
-[source,ruby]
-----
-# bad
-def compute_thing(thing)
-  if thing[:foo]
-    update_with_bar(thing[:foo])
-    if thing[:foo][:bar]
-      partial_compute(thing)
-    else
-      re_compute(thing)
+    # bad
+    def compute_thing(thing)
+      if thing[:foo]
+        update_with_bar(thing[:foo])
+        if thing[:foo][:bar]
+          partial_compute(thing)
+        else
+          re_compute(thing)
+        end
+      end
     end
-  end
-end
 
-# good
-def compute_thing(thing)
-  return unless thing[:foo]
-  update_with_bar(thing[:foo])
-  return re_compute(thing) unless thing[:foo][:bar]
-  partial_compute(thing)
-end
-----
+    # good
+    def compute_thing(thing)
+      return unless thing[:foo]
+      update_with_bar(thing[:foo])
+      return re_compute(thing) unless thing[:foo][:bar]
+      partial_compute(thing)
+    end
 
 Prefer `next` in loops instead of conditional blocks.
 
-[source,ruby]
-----
-# bad
-[0, 1, 2, 3].each do |item|
-  if item > 1
-    puts item
-  end
-end
+    # bad
+    [0, 1, 2, 3].each do |item|
+      if item > 1
+        puts item
+      end
+    end
 
-# good
-[0, 1, 2, 3].each do |item|
-  next unless item > 1
-  puts item
-end
-----
+    # good
+    [0, 1, 2, 3].each do |item|
+      next unless item > 1
+      puts item
+    end
 
-== Exceptions
+# Exceptions
 
-=== `raise` vs `fail` [[prefer-raise-over-fail]]
+## `raise` vs `fail` <span id="prefer-raise-over-fail"></span>
 
 Prefer `raise` over `fail` for exceptions.
 
-[source,ruby]
-----
-# bad
-fail SomeException, 'message'
+    # bad
+    fail SomeException, 'message'
 
-# good
-raise SomeException, 'message'
-----
+    # good
+    raise SomeException, 'message'
 
-=== Raising Explicit `RuntimeError` [[no-explicit-runtimeerror]]
+## Raising Explicit `RuntimeError` <span id="no-explicit-runtimeerror"></span>
 
-Don't specify `RuntimeError` explicitly in the two argument version of `raise`.
+Don’t specify `RuntimeError` explicitly in the two argument version of `raise`.
 
-[source,ruby]
-----
-# bad
-raise RuntimeError, 'message'
+    # bad
+    raise RuntimeError, 'message'
 
-# good - signals a RuntimeError by default
-raise 'message'
-----
+    # good - signals a RuntimeError by default
+    raise 'message'
 
-=== Exception Class Messages [[exception-class-messages]]
+## Exception Class Messages <span id="exception-class-messages"></span>
 
 Prefer supplying an exception class and a message as two separate arguments to `raise`, instead of an exception instance.
 
-[source,ruby]
-----
-# bad
-raise SomeException.new('message')
-# Note that there is no way to do `raise SomeException.new('message'), backtrace`.
+    # bad
+    raise SomeException.new('message')
+    # Note that there is no way to do `raise SomeException.new('message'), backtrace`.
 
-# good
-raise SomeException, 'message'
-# Consistent with `raise SomeException, 'message', backtrace`.
-----
+    # good
+    raise SomeException, 'message'
+    # Consistent with `raise SomeException, 'message', backtrace`.
 
-=== `return` from `ensure` [[no-return-ensure]]
+## `return` from `ensure` <span id="no-return-ensure"></span>
 
-Do not return from an `ensure` block.
-If you explicitly return from a method inside an `ensure` block, the return will take precedence over any exception being raised, and the method will return as if no exception had been raised at all.
-In effect, the exception will be silently thrown away.
+Do not return from an `ensure` block. If you explicitly return from a method inside an `ensure` block, the return will take precedence over any exception being raised, and the method will return as if no exception had been raised at all. In effect, the exception will be silently thrown away.
 
-[source,ruby]
-----
-# bad
-def foo
-  raise
-ensure
-  return 'very bad idea'
-end
-----
+    # bad
+    def foo
+      raise
+    ensure
+      return 'very bad idea'
+    end
 
-=== Implicit `begin` [[begin-implicit]]
+## Implicit `begin` <span id="begin-implicit"></span>
 
-Use _implicit begin blocks_ where possible.
+Use *implicit begin blocks* where possible.
 
-[source,ruby]
-----
-# bad
-def foo
-  begin
-    # main logic goes here
-  rescue
-    # failure handling goes here
-  end
-end
+    # bad
+    def foo
+      begin
+        # main logic goes here
+      rescue
+        # failure handling goes here
+      end
+    end
 
-# good
-def foo
-  # main logic goes here
-rescue
-  # failure handling goes here
-end
-----
+    # good
+    def foo
+      # main logic goes here
+    rescue
+      # failure handling goes here
+    end
 
-=== Contingency Methods [[contingency-methods]]
+## Contingency Methods <span id="contingency-methods"></span>
 
-Mitigate the proliferation of `begin` blocks by using _contingency methods_ (a term coined by Avdi Grimm).
+Mitigate the proliferation of `begin` blocks by using *contingency methods* (a term coined by Avdi Grimm).
 
-[source,ruby]
-----
-# bad
-begin
-  something_that_might_fail
-rescue IOError
-  # handle IOError
-end
+    # bad
+    begin
+      something_that_might_fail
+    rescue IOError
+      # handle IOError
+    end
 
-begin
-  something_else_that_might_fail
-rescue IOError
-  # handle IOError
-end
+    begin
+      something_else_that_might_fail
+    rescue IOError
+      # handle IOError
+    end
 
-# good
-def with_io_error_handling
-  yield
-rescue IOError
-  # handle IOError
-end
+    # good
+    def with_io_error_handling
+      yield
+    rescue IOError
+      # handle IOError
+    end
 
-with_io_error_handling { something_that_might_fail }
+    with_io_error_handling { something_that_might_fail }
 
-with_io_error_handling { something_else_that_might_fail }
-----
+    with_io_error_handling { something_else_that_might_fail }
 
-=== Suppressing Exceptions [[dont-hide-exceptions]]
+## Suppressing Exceptions <span id="dont-hide-exceptions"></span>
 
-Don't suppress exceptions.
+Don’t suppress exceptions.
 
-[source,ruby]
-----
-# bad
-begin
-  do_something # an exception occurs here
-rescue SomeError
-end
+    # bad
+    begin
+      do_something # an exception occurs here
+    rescue SomeError
+    end
 
-# good
-begin
-  do_something # an exception occurs here
-rescue SomeError
-  handle_exception
-end
+    # good
+    begin
+      do_something # an exception occurs here
+    rescue SomeError
+      handle_exception
+    end
 
-# good
-begin
-  do_something # an exception occurs here
-rescue SomeError
-  # Notes on why exception handling is not performed
-end
+    # good
+    begin
+      do_something # an exception occurs here
+    rescue SomeError
+      # Notes on why exception handling is not performed
+    end
 
-# good
-do_something rescue nil
-----
+    # good
+    do_something rescue nil
 
-=== Using `rescue` as a Modifier [[no-rescue-modifiers]]
+## Using `rescue` as a Modifier <span id="no-rescue-modifiers"></span>
 
 Avoid using `rescue` in its modifier form.
 
-[source,ruby]
-----
-# bad - this catches exceptions of StandardError class and its descendant classes
-read_file rescue handle_error($!)
+    # bad - this catches exceptions of StandardError class and its descendant classes
+    read_file rescue handle_error($!)
 
-# good - this catches only the exceptions of Errno::ENOENT class and its descendant classes
-def foo
-  read_file
-rescue Errno::ENOENT => e
-  handle_error(e)
-end
-----
+    # good - this catches only the exceptions of Errno::ENOENT class and its descendant classes
+    def foo
+      read_file
+    rescue Errno::ENOENT => e
+      handle_error(e)
+    end
 
-=== Using Exceptions for Flow of Control [[no-exceptional-flows]]
+## Using Exceptions for Flow of Control <span id="no-exceptional-flows"></span>
 
-Don't use exceptions for flow of control.
+Don’t use exceptions for flow of control.
 
-[source,ruby]
-----
-# bad
-begin
-  n / d
-rescue ZeroDivisionError
-  puts 'Cannot divide by 0!'
-end
+    # bad
+    begin
+      n / d
+    rescue ZeroDivisionError
+      puts 'Cannot divide by 0!'
+    end
 
-# good
-if d.zero?
-  puts 'Cannot divide by 0!'
-else
-  n / d
-end
-----
+    # good
+    if d.zero?
+      puts 'Cannot divide by 0!'
+    else
+      n / d
+    end
 
-=== Blind Rescues [[no-blind-rescues]]
+## Blind Rescues <span id="no-blind-rescues"></span>
 
-Avoid rescuing the `Exception` class.
-This will trap signals and calls to `exit`, requiring you to `kill -9` the process.
+Avoid rescuing the `Exception` class. This will trap signals and calls to `exit`, requiring you to `kill -9` the process.
 
-[source,ruby]
-----
-# bad
-begin
-  # calls to exit and kill signals will be caught (except kill -9)
-  exit
-rescue Exception
-  puts "you didn't really want to exit, right?"
-  # exception handling
-end
+    # bad
+    begin
+      # calls to exit and kill signals will be caught (except kill -9)
+      exit
+    rescue Exception
+      puts "you didn't really want to exit, right?"
+      # exception handling
+    end
 
-# good
-begin
-  # a blind rescue rescues from StandardError, not Exception as many
-  # programmers assume.
-rescue => e
-  # exception handling
-end
+    # good
+    begin
+      # a blind rescue rescues from StandardError, not Exception as many
+      # programmers assume.
+    rescue => e
+      # exception handling
+    end
 
-# also good
-begin
-  # an exception occurs here
-rescue StandardError => e
-  # exception handling
-end
-----
+    # also good
+    begin
+      # an exception occurs here
+    rescue StandardError => e
+      # exception handling
+    end
 
-=== Exception Rescuing Ordering [[exception-ordering]]
+## Exception Rescuing Ordering <span id="exception-ordering"></span>
 
-Put more specific exceptions higher up the rescue chain, otherwise they'll never be rescued from.
+Put more specific exceptions higher up the rescue chain, otherwise they’ll never be rescued from.
 
-[source,ruby]
-----
-# bad
-begin
-  # some code
-rescue StandardError => e
-  # some handling
-rescue IOError => e
-  # some handling that will never be executed
-end
+    # bad
+    begin
+      # some code
+    rescue StandardError => e
+      # some handling
+    rescue IOError => e
+      # some handling that will never be executed
+    end
 
-# good
-begin
-  # some code
-rescue IOError => e
-  # some handling
-rescue StandardError => e
-  # some handling
-end
-----
+    # good
+    begin
+      # some code
+    rescue IOError => e
+      # some handling
+    rescue StandardError => e
+      # some handling
+    end
 
-=== Reading from a file [[file-read]]
+## Reading from a file <span id="file-read"></span>
 
 Use the convenience methods `File.read` or `File.binread` when only reading a file start to finish in a single operation.
 
-[source,ruby]
-----
-## text mode
-# bad (only when reading from beginning to end - modes: 'r', 'rt', 'r+', 'r+t')
-File.open(filename).read
-File.open(filename, &:read)
-File.open(filename) { |f| f.read }
-File.open(filename) do |f|
-  f.read
-end
-File.open(filename, 'r').read
-File.open(filename, 'r', &:read)
-File.open(filename, 'r') { |f| f.read }
-File.open(filename, 'r') do |f|
-  f.read
-end
+    ## text mode
+    # bad (only when reading from beginning to end - modes: 'r', 'rt', 'r+', 'r+t')
+    File.open(filename).read
+    File.open(filename, &:read)
+    File.open(filename) { |f| f.read }
+    File.open(filename) do |f|
+      f.read
+    end
+    File.open(filename, 'r').read
+    File.open(filename, 'r', &:read)
+    File.open(filename, 'r') { |f| f.read }
+    File.open(filename, 'r') do |f|
+      f.read
+    end
 
-# good
-File.read(filename)
+    # good
+    File.read(filename)
 
-## binary mode
-# bad (only when reading from beginning to end - modes: 'rb', 'r+b')
-File.open(filename, 'rb').read
-File.open(filename, 'rb', &:read)
-File.open(filename, 'rb') { |f| f.read }
-File.open(filename, 'rb') do |f|
-  f.read
-end
+    ## binary mode
+    # bad (only when reading from beginning to end - modes: 'rb', 'r+b')
+    File.open(filename, 'rb').read
+    File.open(filename, 'rb', &:read)
+    File.open(filename, 'rb') { |f| f.read }
+    File.open(filename, 'rb') do |f|
+      f.read
+    end
 
-# good
-File.binread(filename)
-----
+    # good
+    File.binread(filename)
 
-=== Writing to a file [[file-write]]
+## Writing to a file <span id="file-write"></span>
 
 Use the convenience methods `File.write` or `File.binwrite` when only opening a file to create / replace its content in a single operation.
 
-[source,ruby]
-----
-## text mode
-# bad (only truncating modes: 'w', 'wt', 'w+', 'w+t')
-File.open(filename, 'w').write(content)
-File.open(filename, 'w') { |f| f.write(content) }
-File.open(filename, 'w') do |f|
-  f.write(content)
-end
+    ## text mode
+    # bad (only truncating modes: 'w', 'wt', 'w+', 'w+t')
+    File.open(filename, 'w').write(content)
+    File.open(filename, 'w') { |f| f.write(content) }
+    File.open(filename, 'w') do |f|
+      f.write(content)
+    end
 
-# good
-File.write(filename, content)
+    # good
+    File.write(filename, content)
 
-## binary mode
-# bad (only truncating modes: 'wb', 'w+b')
-File.open(filename, 'wb').write(content)
-File.open(filename, 'wb') { |f| f.write(content) }
-File.open(filename, 'wb') do |f|
-  f.write(content)
-end
+    ## binary mode
+    # bad (only truncating modes: 'wb', 'w+b')
+    File.open(filename, 'wb').write(content)
+    File.open(filename, 'wb') { |f| f.write(content) }
+    File.open(filename, 'wb') do |f|
+      f.write(content)
+    end
 
-# good
-File.binwrite(filename, content)
-----
+    # good
+    File.binwrite(filename, content)
 
-=== Release External Resources [[release-resources]]
+## Release External Resources <span id="release-resources"></span>
 
 Release external resources obtained by your program in an `ensure` block.
 
-[source,ruby]
-----
-f = File.open('testfile')
-begin
-  # .. process
-rescue
-  # .. handle error
-ensure
-  f.close if f
-end
-----
+    f = File.open('testfile')
+    begin
+      # .. process
+    rescue
+      # .. handle error
+    ensure
+      f.close if f
+    end
 
-=== Auto-release External Resources [[auto-release-resources]]
+## Auto-release External Resources <span id="auto-release-resources"></span>
 
 Use versions of resource obtaining methods that do automatic resource cleanup when possible.
 
-[source,ruby]
-----
-# bad - you need to close the file descriptor explicitly
-f = File.open('testfile')
-# some action on the file
-f.close
+    # bad - you need to close the file descriptor explicitly
+    f = File.open('testfile')
+    # some action on the file
+    f.close
 
-# good - the file descriptor is closed automatically
-File.open('testfile') do |f|
-  # some action on the file
-end
-----
+    # good - the file descriptor is closed automatically
+    File.open('testfile') do |f|
+      # some action on the file
+    end
 
-=== Standard Exceptions [[standard-exceptions]]
+## Standard Exceptions <span id="standard-exceptions"></span>
 
 Prefer the use of exceptions from the standard library over introducing new exception classes.
 
-== Assignment & Comparison
+# Assignment & Comparison
 
-=== Parallel Assignment [[parallel-assignment]]
+## Parallel Assignment <span id="parallel-assignment"></span>
 
-Avoid the use of parallel assignment for defining variables.
-Parallel assignment is allowed when it is the return of a method call, used with the splat operator, or when used to swap variable assignment.
-Parallel assignment is less readable than separate assignment.
+Avoid the use of parallel assignment for defining variables. Parallel assignment is allowed when it is the return of a method call, used with the splat operator, or when used to swap variable assignment. Parallel assignment is less readable than separate assignment.
 
-[source,ruby]
-----
-# bad
-a, b, c, d = 'foo', 'bar', 'baz', 'foobar'
+    # bad
+    a, b, c, d = 'foo', 'bar', 'baz', 'foobar'
 
-# good
-a = 'foo'
-b = 'bar'
-c = 'baz'
-d = 'foobar'
+    # good
+    a = 'foo'
+    b = 'bar'
+    c = 'baz'
+    d = 'foobar'
 
-# good - swapping variable assignment
-# Swapping variable assignment is a special case because it will allow you to
-# swap the values that are assigned to each variable.
-a = 'foo'
-b = 'bar'
+    # good - swapping variable assignment
+    # Swapping variable assignment is a special case because it will allow you to
+    # swap the values that are assigned to each variable.
+    a = 'foo'
+    b = 'bar'
 
-a, b = b, a
-puts a # => 'bar'
-puts b # => 'foo'
+    a, b = b, a
+    puts a # => 'bar'
+    puts b # => 'foo'
 
-# good - method return
-def multi_return
-  [1, 2]
-end
+    # good - method return
+    def multi_return
+      [1, 2]
+    end
 
-first, second = multi_return
+    first, second = multi_return
 
-# good - use with splat
-first, *list = [1, 2, 3, 4] # first => 1, list => [2, 3, 4]
+    # good - use with splat
+    first, *list = [1, 2, 3, 4] # first => 1, list => [2, 3, 4]
 
-hello_array = *'Hello' # => ["Hello"]
+    hello_array = *'Hello' # => ["Hello"]
 
-a = *(1..3) # => [1, 2, 3]
-----
+    a = *(1..3) # => [1, 2, 3]
 
-=== Values Swapping [[values-swapping]]
+## Values Swapping <span id="values-swapping"></span>
 
 Use parallel assignment when swapping 2 values.
 
-[source,ruby]
-----
-# bad
-tmp = x
-x = y
-y = tmp
+    # bad
+    tmp = x
+    x = y
+    y = tmp
 
-# good
-x, y = y, x
-----
+    # good
+    x, y = y, x
 
-=== Dealing with Trailing Underscore Variables in Destructuring Assignment [[trailing-underscore-variables]]
+## Dealing with Trailing Underscore Variables in Destructuring Assignment <span id="trailing-underscore-variables"></span>
 
-Avoid the use of unnecessary trailing underscore variables during
-parallel assignment. Named underscore variables are to be preferred over
-underscore variables because of the context that they provide.
-Trailing underscore variables are necessary when there is a splat variable
-defined on the left side of the assignment, and the splat variable is
-not an underscore.
+Avoid the use of unnecessary trailing underscore variables during parallel assignment. Named underscore variables are to be preferred over underscore variables because of the context that they provide. Trailing underscore variables are necessary when there is a splat variable defined on the left side of the assignment, and the splat variable is not an underscore.
 
-[source,ruby]
-----
-# bad
-foo = 'one,two,three,four,five'
-# Unnecessary assignment that does not provide useful information
-first, second, _ = foo.split(',')
-first, _, _ = foo.split(',')
-first, *_ = foo.split(',')
+    # bad
+    foo = 'one,two,three,four,five'
+    # Unnecessary assignment that does not provide useful information
+    first, second, _ = foo.split(',')
+    first, _, _ = foo.split(',')
+    first, *_ = foo.split(',')
 
-# good
-foo = 'one,two,three,four,five'
-# The underscores are needed to show that you want all elements
-# except for the last number of underscore elements
-*beginning, _ = foo.split(',')
-*beginning, something, _ = foo.split(',')
+    # good
+    foo = 'one,two,three,four,five'
+    # The underscores are needed to show that you want all elements
+    # except for the last number of underscore elements
+    *beginning, _ = foo.split(',')
+    *beginning, something, _ = foo.split(',')
 
-a, = foo.split(',')
-a, b, = foo.split(',')
-# Unnecessary assignment to an unused variable, but the assignment
-# provides us with useful information.
-first, _second = foo.split(',')
-first, _second, = foo.split(',')
-first, *_ending = foo.split(',')
-----
+    a, = foo.split(',')
+    a, b, = foo.split(',')
+    # Unnecessary assignment to an unused variable, but the assignment
+    # provides us with useful information.
+    first, _second = foo.split(',')
+    first, _second, = foo.split(',')
+    first, *_ending = foo.split(',')
 
-=== Self-assignment [[self-assignment]]
+## Self-assignment <span id="self-assignment"></span>
 
 Use shorthand self assignment operators whenever applicable.
 
-[source,ruby]
-----
-# bad
-x = x + y
-x = x * y
-x = x**y
-x = x / y
-x = x || y
-x = x && y
+    # bad
+    x = x + y
+    x = x * y
+    x = x**y
+    x = x / y
+    x = x || y
+    x = x && y
 
-# good
-x += y
-x *= y
-x **= y
-x /= y
-x ||= y
-x &&= y
-----
+    # good
+    x += y
+    x *= y
+    x **= y
+    x /= y
+    x ||= y
+    x &&= y
 
-=== Conditional Variable Initialization Shorthand [[double-pipe-for-uninit]]
+## Conditional Variable Initialization Shorthand <span id="double-pipe-for-uninit"></span>
 
-Use `||=` to initialize variables only if they're not already initialized.
+Use `||=` to initialize variables only if they’re not already initialized.
 
-[source,ruby]
-----
-# bad
-name = name ? name : 'Bozhidar'
+    # bad
+    name = name ? name : 'Bozhidar'
 
-# bad
-name = 'Bozhidar' unless name
+    # bad
+    name = 'Bozhidar' unless name
 
-# good - set name to 'Bozhidar', only if it's nil or false
-name ||= 'Bozhidar'
-----
+    # good - set name to 'Bozhidar', only if it's nil or false
+    name ||= 'Bozhidar'
 
-[WARNING]
-====
-Don't use `||=` to initialize boolean variables.
-(Consider what would happen if the current value happened to be `false`.)
+Don’t use `||=` to initialize boolean variables. (Consider what would happen if the current value happened to be `false`.)
 
-[source,ruby]
-----
-# bad - would set enabled to true even if it was false
-enabled ||= true
+    # bad - would set enabled to true even if it was false
+    enabled ||= true
 
-# good
-enabled = true if enabled.nil?
-----
-====
+    # good
+    enabled = true if enabled.nil?
 
-=== Existence Check Shorthand [[double-amper-preprocess]]
+## Existence Check Shorthand <span id="double-amper-preprocess"></span>
 
-Use `&&=` to preprocess variables that may or may not exist.
-Using `&&=` will change the value only if it exists, removing the need to check its existence with `if`.
+Use `&&=` to preprocess variables that may or may not exist. Using `&&=` will change the value only if it exists, removing the need to check its existence with `if`.
 
-[source,ruby]
-----
-# bad
-if something
-  something = something.downcase
-end
+    # bad
+    if something
+      something = something.downcase
+    end
 
-# bad
-something = something ? something.downcase : nil
+    # bad
+    something = something ? something.downcase : nil
 
-# ok
-something = something.downcase if something
+    # ok
+    something = something.downcase if something
 
-# good
-something = something && something.downcase
+    # good
+    something = something && something.downcase
 
-# better
-something &&= something.downcase
-----
+    # better
+    something &&= something.downcase
 
-=== Identity Comparison [[identity-comparison]]
+## Identity Comparison <span id="identity-comparison"></span>
 
 Prefer `equal?` over `==` when comparing `object_id`. `Object#equal?` is provided to compare objects for identity, and in contrast `Object#==` is provided for the purpose of doing value comparison.
 
-[source,ruby]
-----
-# bad
-foo.object_id == bar.object_id
+    # bad
+    foo.object_id == bar.object_id
 
-# good
-foo.equal?(bar)
-----
+    # good
+    foo.equal?(bar)
 
 Similarly, prefer using `Hash#compare_by_identity` than using `object_id` for keys:
 
-[source,ruby]
-----
-# bad
-hash = {}
-hash[foo.object_id] = :bar
-if hash.key?(baz.object_id) # ...
+    # bad
+    hash = {}
+    hash[foo.object_id] = :bar
+    if hash.key?(baz.object_id) # ...
 
-# good
-hash = {}.compare_by_identity
-hash[foo] = :bar
-if hash.key?(baz) # ...
-----
+    # good
+    hash = {}.compare_by_identity
+    hash[foo] = :bar
+    if hash.key?(baz) # ...
 
 Note that `Set` also has `Set#compare_by_identity` available.
 
-=== Explicit Use of the Case Equality Operator [[no-case-equality]]
+## Explicit Use of the Case Equality Operator <span id="no-case-equality"></span>
 
-Avoid explicit use of the case equality operator `===`.
-As its name implies it is meant to be used implicitly by `case` expressions and outside of them it yields some pretty confusing code.
+Avoid explicit use of the case equality operator `===`. As its name implies it is meant to be used implicitly by `case` expressions and outside of them it yields some pretty confusing code.
 
-[source,ruby]
-----
-# bad
-Array === something
-(1..100) === 7
-/something/ === some_string
+    # bad
+    Array === something
+    (1..100) === 7
+    /something/ === some_string
 
-# good
-something.is_a?(Array)
-(1..100).include?(7)
-some_string.match?(/something/)
-----
+    # good
+    something.is_a?(Array)
+    (1..100).include?(7)
+    some_string.match?(/something/)
 
-NOTE: With direct subclasses of `BasicObject`, using `is_a?` is not an option since `BasicObject` doesn't provide that method (it's defined in `Object`). In those
-rare cases it's OK to use `===`.
+With direct subclasses of `BasicObject`, using `is_a?` is not an option since `BasicObject` doesn’t provide that method (it’s defined in `Object`). In those rare cases it’s OK to use `===`.
 
-=== `is_a?` vs `kind_of?` [[is-a-vs-kind-of]]
+## `is_a?` vs `kind_of?` <span id="is-a-vs-kind-of"></span>
 
 Prefer `is_a?` over `kind_of?`. The two methods are synonyms, but `is_a?` is the more commonly used name in the wild.
 
-[source,ruby]
-----
-# bad
-something.kind_of?(Array)
+    # bad
+    something.kind_of?(Array)
 
-# good
-something.is_a?(Array)
-----
+    # good
+    something.is_a?(Array)
 
-=== `is_a?` vs `instance_of?` [[is-a-vs-instance-of]]
+## `is_a?` vs `instance_of?` <span id="is-a-vs-instance-of"></span>
 
 Prefer `is_a?` over `instance_of?`.
 
-While the two methods are similar, `is_a?` will consider the whole inheritance
-chain (superclasses and included modules), which is what you normally would want
-to do. `instance_of?`, on the other hand, only returns `true` if an object is an
-instance of that exact class you're checking for, not a subclass.
+While the two methods are similar, `is_a?` will consider the whole inheritance chain (superclasses and included modules), which is what you normally would want to do. `instance_of?`, on the other hand, only returns `true` if an object is an instance of that exact class you’re checking for, not a subclass.
 
-[source,ruby]
-----
-# bad
-something.instance_of?(Array)
+    # bad
+    something.instance_of?(Array)
 
-# good
-something.is_a?(Array)
-----
+    # good
+    something.is_a?(Array)
 
-=== `instance_of?` vs class comparison [[instance-of-vs-class-comparison]]
+## `instance_of?` vs class comparison <span id="instance-of-vs-class-comparison"></span>
 
 Use `Object#instance_of?` instead of class comparison for equality.
 
-[source,ruby]
-----
-# bad
-var.class == Date
-var.class.equal?(Date)
-var.class.eql?(Date)
-var.class.name == 'Date'
+    # bad
+    var.class == Date
+    var.class.equal?(Date)
+    var.class.eql?(Date)
+    var.class.name == 'Date'
 
-# good
-var.instance_of?(Date)
-----
+    # good
+    var.instance_of?(Date)
 
-=== `==` vs `eql?` [[eql]]
+## `==` vs `eql?` <span id="eql"></span>
 
-Do not use `eql?` when using `==` will do.
-The stricter comparison semantics provided by `eql?` are rarely needed in practice.
+Do not use `eql?` when using `==` will do. The stricter comparison semantics provided by `eql?` are rarely needed in practice.
 
-[source,ruby]
-----
-# bad - eql? is the same as == for strings
-'ruby'.eql? some_str
+    # bad - eql? is the same as == for strings
+    'ruby'.eql? some_str
 
-# good
-'ruby' == some_str
-1.0.eql? x # eql? makes sense here if want to differentiate between Integer and Float 1
-----
+    # good
+    'ruby' == some_str
+    1.0.eql? x # eql? makes sense here if want to differentiate between Integer and Float 1
 
-== Blocks, Procs & Lambdas
+# Blocks, Procs & Lambdas
 
-=== Proc Application Shorthand [[single-action-blocks]]
+## Proc Application Shorthand <span id="single-action-blocks"></span>
 
 Use the Proc call shorthand when the called method is the only operation of a block.
 
-[source,ruby]
-----
-# bad
-names.map { |name| name.upcase }
+    # bad
+    names.map { |name| name.upcase }
 
-# good
-names.map(&:upcase)
-----
+    # good
+    names.map(&:upcase)
 
-=== Single-line Blocks Delimiters [[single-line-blocks]]
+## Single-line Blocks Delimiters <span id="single-line-blocks"></span>
 
-Prefer `{...}` over `do...end` for single-line blocks.
-Avoid using `{...}` for multi-line blocks (multi-line chaining is always ugly).
-Always use `do...end` for "control flow" and "method definitions" (e.g. in Rakefiles and certain DSLs).
-Avoid `do...end` when chaining.
+Prefer `{...}` over `do...end` for single-line blocks. Avoid using `{...}` for multi-line blocks (multi-line chaining is always ugly). Always use `do...end` for "control flow" and "method definitions" (e.g. in Rakefiles and certain DSLs). Avoid `do...end` when chaining.
 
-[source,ruby]
-----
-names = %w[Bozhidar Filipp Sarah]
+    names = %w[Bozhidar Filipp Sarah]
 
-# bad
-names.each do |name|
-  puts name
-end
+    # bad
+    names.each do |name|
+      puts name
+    end
 
-# good
-names.each { |name| puts name }
+    # good
+    names.each { |name| puts name }
 
-# bad
-names.select do |name|
-  name.start_with?('S')
-end.map { |name| name.upcase }
+    # bad
+    names.select do |name|
+      name.start_with?('S')
+    end.map { |name| name.upcase }
 
-# good
-names.select { |name| name.start_with?('S') }.map(&:upcase)
-----
+    # good
+    names.select { |name| name.start_with?('S') }.map(&:upcase)
 
-Some will argue that multi-line chaining would look OK with the use of {...}, but they should ask themselves - is this code really readable and can the blocks' contents be extracted into nifty methods?
+Some will argue that multi-line chaining would look OK with the use of {…}, but they should ask themselves - is this code really readable and can the blocks' contents be extracted into nifty methods?
 
-=== Explicit Block Argument [[block-argument]]
+## Explicit Block Argument <span id="block-argument"></span>
 
 Consider using explicit block argument to avoid writing block literal that just passes its arguments to another block.
 
-[source,ruby]
-----
-require 'tempfile'
+    require 'tempfile'
 
-# bad
-def with_tmp_dir
-  Dir.mktmpdir do |tmp_dir|
-    Dir.chdir(tmp_dir) { |dir| yield dir }  # block just passes arguments
-  end
-end
+    # bad
+    def with_tmp_dir
+      Dir.mktmpdir do |tmp_dir|
+        Dir.chdir(tmp_dir) { |dir| yield dir }  # block just passes arguments
+      end
+    end
 
-# good
-def with_tmp_dir(&block)
-  Dir.mktmpdir do |tmp_dir|
-    Dir.chdir(tmp_dir, &block)
-  end
-end
+    # good
+    def with_tmp_dir(&block)
+      Dir.mktmpdir do |tmp_dir|
+        Dir.chdir(tmp_dir, &block)
+      end
+    end
 
-with_tmp_dir do |dir|
-  puts "dir is accessible as a parameter and pwd is set: #{dir}"
-end
-----
+    with_tmp_dir do |dir|
+      puts "dir is accessible as a parameter and pwd is set: #{dir}"
+    end
 
-=== Trailing Comma in Block Parameters [[no-trailing-parameters-comma]]
+## Trailing Comma in Block Parameters <span id="no-trailing-parameters-comma"></span>
 
 Avoid comma after the last parameter in a block, except in cases where only a single argument is present and its removal would affect functionality (for instance, array destructuring).
 
-[source,ruby]
-----
-# bad - easier to move/add/remove parameters, but still not preferred
-[[1, 2, 3], [4, 5, 6]].each do |a, b, c,|
-  a + b + c
-end
+    # bad - easier to move/add/remove parameters, but still not preferred
+    [[1, 2, 3], [4, 5, 6]].each do |a, b, c,|
+      a + b + c
+    end
 
-# good
-[[1, 2, 3], [4, 5, 6]].each do |a, b, c|
-  a + b + c
-end
+    # good
+    [[1, 2, 3], [4, 5, 6]].each do |a, b, c|
+      a + b + c
+    end
 
-# bad
-[[1, 2, 3], [4, 5, 6]].each { |a, b, c,| a + b + c }
+    # bad
+    [[1, 2, 3], [4, 5, 6]].each { |a, b, c,| a + b + c }
 
-# good
-[[1, 2, 3], [4, 5, 6]].each { |a, b, c| a + b + c }
+    # good
+    [[1, 2, 3], [4, 5, 6]].each { |a, b, c| a + b + c }
 
-# good - this comma is meaningful for array destructuring
-[[1, 2, 3], [4, 5, 6]].map { |a,| a }
-----
+    # good - this comma is meaningful for array destructuring
+    [[1, 2, 3], [4, 5, 6]].map { |a,| a }
 
+## Nested Method Definitions <span id="no-nested-methods"></span>
 
-=== Nested Method Definitions [[no-nested-methods]]
+Do not use nested method definitions, use lambda instead. Nested method definitions actually produce methods in the same scope (e.g. class) as the outer method. Furthermore, the "nested method" will be redefined every time the method containing its definition is called.
 
-Do not use nested method definitions, use lambda instead.
-Nested method definitions actually produce methods in the same scope (e.g. class) as the outer method.
-Furthermore, the "nested method" will be redefined every time the method containing its definition is called.
+    # bad
+    def foo(x)
+      def bar(y)
+        # body omitted
+      end
 
-[source,ruby]
-----
-# bad
-def foo(x)
-  def bar(y)
-    # body omitted
-  end
+      bar(x)
+    end
 
-  bar(x)
-end
+    # good - the same as the previous, but no bar redefinition on every foo call
+    def bar(y)
+      # body omitted
+    end
 
-# good - the same as the previous, but no bar redefinition on every foo call
-def bar(y)
-  # body omitted
-end
+    def foo(x)
+      bar(x)
+    end
 
-def foo(x)
-  bar(x)
-end
+    # also good
+    def foo(x)
+      bar = ->(y) { ... }
+      bar.call(x)
+    end
 
-# also good
-def foo(x)
-  bar = ->(y) { ... }
-  bar.call(x)
-end
-----
+## Multi-line Lambda Definition <span id="lambda-multi-line"></span>
 
-=== Multi-line Lambda Definition [[lambda-multi-line]]
+Use the new lambda literal syntax for single-line body blocks. Use the `lambda` method for multi-line blocks.
 
-Use the new lambda literal syntax for single-line body blocks.
-Use the `lambda` method for multi-line blocks.
+    # bad
+    l = lambda { |a, b| a + b }
+    l.call(1, 2)
 
-[source,ruby]
-----
-# bad
-l = lambda { |a, b| a + b }
-l.call(1, 2)
+    # correct, but looks extremely awkward
+    l = ->(a, b) do
+      tmp = a * 7
+      tmp * b / 50
+    end
 
-# correct, but looks extremely awkward
-l = ->(a, b) do
-  tmp = a * 7
-  tmp * b / 50
-end
+    # good
+    l = ->(a, b) { a + b }
+    l.call(1, 2)
 
-# good
-l = ->(a, b) { a + b }
-l.call(1, 2)
+    l = lambda do |a, b|
+      tmp = a * 7
+      tmp * b / 50
+    end
 
-l = lambda do |a, b|
-  tmp = a * 7
-  tmp * b / 50
-end
-----
+## Stabby Lambda Definition with Parameters <span id="stabby-lambda-with-args"></span>
 
-=== Stabby Lambda Definition with Parameters [[stabby-lambda-with-args]]
+Don’t omit the parameter parentheses when defining a stabby lambda with parameters.
 
-Don't omit the parameter parentheses when defining a stabby lambda with parameters.
+    # bad
+    l = ->x, y { something(x, y) }
 
-[source,ruby]
-----
-# bad
-l = ->x, y { something(x, y) }
+    # good
+    l = ->(x, y) { something(x, y) }
 
-# good
-l = ->(x, y) { something(x, y) }
-----
-
-=== Stabby Lambda Definition without Parameters [[stabby-lambda-no-args]]
+## Stabby Lambda Definition without Parameters <span id="stabby-lambda-no-args"></span>
 
 Omit the parameter parentheses when defining a stabby lambda with no parameters.
 
-[source,ruby]
-----
-# bad
-l = ->() { something }
+    # bad
+    l = ->() { something }
 
-# good
-l = -> { something }
-----
+    # good
+    l = -> { something }
 
-=== `proc` vs `Proc.new` [[proc]]
+## `proc` vs `Proc.new` <span id="proc"></span>
 
 Prefer `proc` over `Proc.new`.
 
-[source,ruby]
-----
-# bad
-p = Proc.new { |n| puts n }
+    # bad
+    p = Proc.new { |n| puts n }
 
-# good
-p = proc { |n| puts n }
-----
+    # good
+    p = proc { |n| puts n }
 
-=== Proc Call [[proc-call]]
+## Proc Call <span id="proc-call"></span>
 
 Prefer `proc.call()` over `proc[]` or `proc.()` for both lambdas and procs.
 
-[source,ruby]
-----
-# bad - looks similar to Enumeration access
-l = ->(v) { puts v }
-l[1]
+    # bad - looks similar to Enumeration access
+    l = ->(v) { puts v }
+    l[1]
 
-# good - most compact form, but might be confusing for newcomers to Ruby
-l = ->(v) { puts v }
-l.(1)
+    # good - most compact form, but might be confusing for newcomers to Ruby
+    l = ->(v) { puts v }
+    l.(1)
 
-# good - a bit verbose, but crystal clear
-l = ->(v) { puts v }
-l.call(1)
-----
+    # good - a bit verbose, but crystal clear
+    l = ->(v) { puts v }
+    l.call(1)
 
-== Methods
+# Methods
 
-=== Short Methods [[short-methods]]
+## Short Methods <span id="short-methods"></span>
 
-Avoid methods longer than 10 LOC (lines of code).
-Ideally, most methods will be shorter than 5 LOC.
-Empty lines do not contribute to the relevant LOC.
+Avoid methods longer than 10 LOC (lines of code). Ideally, most methods will be shorter than 5 LOC. Empty lines do not contribute to the relevant LOC.
 
-=== Top-Level Methods
+## Top-Level Methods
 
 Avoid top-level method definitions. Organize them in modules, classes or structs instead.
 
-NOTE: It is fine to use top-level method definitions in scripts.
+It is fine to use top-level method definitions in scripts.
 
-[source,ruby]
-----
-# bad
-def some_method; end
+    # bad
+    def some_method; end
 
-# good
-class SomeClass
-  def some_method; end
-end
-----
+    # good
+    class SomeClass
+      def some_method; end
+    end
 
-=== No Single-line Methods [[no-single-line-methods]]
+## No Single-line Methods <span id="no-single-line-methods"></span>
 
-Avoid single-line methods.
-Although they are somewhat popular in the wild, there are a few peculiarities about their definition syntax that make their use undesirable.
-At any rate - there should be no more than one expression in a single-line method.
+Avoid single-line methods. Although they are somewhat popular in the wild, there are a few peculiarities about their definition syntax that make their use undesirable. At any rate - there should be no more than one expression in a single-line method.
 
-NOTE: Ruby 3 introduced an alternative syntax for single-line method definitions, that's discussed in the next section
-of the guide.
+Ruby 3 introduced an alternative syntax for single-line method definitions, that’s discussed in the next section of the guide.
 
-[source,ruby]
-----
-# bad
-def too_much; something; something_else; end
+    # bad
+    def too_much; something; something_else; end
 
-# okish - notice that the first ; is required
-def no_braces_method; body end
+    # okish - notice that the first ; is required
+    def no_braces_method; body end
 
-# okish - notice that the second ; is optional
-def no_braces_method; body; end
+    # okish - notice that the second ; is optional
+    def no_braces_method; body; end
 
-# okish - valid syntax, but no ; makes it kind of hard to read
-def some_method() body end
+    # okish - valid syntax, but no ; makes it kind of hard to read
+    def some_method() body end
 
-# good
-def some_method
-  body
-end
-----
+    # good
+    def some_method
+      body
+    end
 
 One exception to the rule are empty-body methods.
 
-[source,ruby]
-----
-# good
-def no_op; end
-----
+    # good
+    def no_op; end
 
-=== Endless Methods
+## Endless Methods
 
-Only use Ruby 3.0's endless method definitions with a single line
-body.  Ideally, such method definitions should be both simple (a
-single expression) and free of side effects.
+Only use Ruby 3.0’s endless method definitions with a single line body. Ideally, such method definitions should be both simple (a single expression) and free of side effects.
 
-NOTE: It's important to understand that this guideline doesn't
-contradict the previous one. We still caution against the use of
-single-line method definitions, but if such methods are to be used,
-prefer endless methods.
+It’s important to understand that this guideline doesn’t contradict the previous one. We still caution against the use of single-line method definitions, but if such methods are to be used, prefer endless methods.
 
-[source,ruby]
-----
-# bad
-def fib(x) = if x < 2
-  x
-else
-  fib(x - 1) + fib(x - 2)
-end
+    # bad
+    def fib(x) = if x < 2
+      x
+    else
+      fib(x - 1) + fib(x - 2)
+    end
 
-# good
-def the_answer = 42
-def get_x = @x
-def square(x) = x * x
+    # good
+    def the_answer = 42
+    def get_x = @x
+    def square(x) = x * x
 
-# Not (so) good: has side effect
-def set_x(x) = (@x = x)
-def print_foo = puts("foo")
-----
+    # Not (so) good: has side effect
+    def set_x(x) = (@x = x)
+    def print_foo = puts("foo")
 
-=== Double Colons [[double-colons]]
+## Double Colons <span id="double-colons"></span>
 
-Use `::` only to reference constants (this includes classes and modules) and constructors (like `Array()` or `Nokogiri::HTML()`).
-Do not use `::` for regular method calls.
+Use `::` only to reference constants (this includes classes and modules) and constructors (like `Array()` or `Nokogiri::HTML()`). Do not use `::` for regular method calls.
 
-[source,ruby]
-----
-# bad
-SomeClass::some_method
-some_object::some_method
+    # bad
+    SomeClass::some_method
+    some_object::some_method
 
-# good
-SomeClass.some_method
-some_object.some_method
-SomeModule::SomeClass::SOME_CONST
-SomeModule::SomeClass()
-----
+    # good
+    SomeClass.some_method
+    some_object.some_method
+    SomeModule::SomeClass::SOME_CONST
+    SomeModule::SomeClass()
 
-=== Colon Method Definition [[colon-method-definition]]
+## Colon Method Definition <span id="colon-method-definition"></span>
 
 Do not use `::` to define class methods.
 
-[source,ruby]
-----
-# bad
-class Foo
-  def self::some_method
-  end
-end
+    # bad
+    class Foo
+      def self::some_method
+      end
+    end
 
-# good
-class Foo
-  def self.some_method
-  end
-end
-----
+    # good
+    class Foo
+      def self.some_method
+      end
+    end
 
-=== Method Definition Parentheses [[method-parens]]
+## Method Definition Parentheses <span id="method-parens"></span>
 
-Use `def` with parentheses when there are parameters.
-Omit the parentheses when the method doesn't accept any parameters.
+Use `def` with parentheses when there are parameters. Omit the parentheses when the method doesn’t accept any parameters.
 
-[source,ruby]
-----
-# bad
-def some_method()
-  # body omitted
-end
+    # bad
+    def some_method()
+      # body omitted
+    end
 
-# good
-def some_method
-  # body omitted
-end
+    # good
+    def some_method
+      # body omitted
+    end
 
-# bad
-def some_method_with_parameters param1, param2
-  # body omitted
-end
+    # bad
+    def some_method_with_parameters param1, param2
+      # body omitted
+    end
 
-# good
-def some_method_with_parameters(param1, param2)
-  # body omitted
-end
-----
+    # good
+    def some_method_with_parameters(param1, param2)
+      # body omitted
+    end
 
-=== Method Call Parentheses [[method-invocation-parens]][[method-call-parens]]
+## Method Call Parentheses <span id="method-invocation-parens"></span><span id="method-call-parens"></span>
 
 Use parentheses around the arguments of method calls, especially if the first argument begins with an open parenthesis `(`, as in `f((3 + 2) + 1)`.
 
-[source,ruby]
-----
-# bad
-x = Math.sin y
-# good
-x = Math.sin(y)
+    # bad
+    x = Math.sin y
+    # good
+    x = Math.sin(y)
 
-# bad
-array.delete e
-# good
-array.delete(e)
+    # bad
+    array.delete e
+    # good
+    array.delete(e)
 
-# bad
-temperance = Person.new 'Temperance', 30
-# good
-temperance = Person.new('Temperance', 30)
-----
+    # bad
+    temperance = Person.new 'Temperance', 30
+    # good
+    temperance = Person.new('Temperance', 30)
 
-==== Method Call with No Arguments [[method-invocation-parens-no-args]][[method-call-parens-no-args]]
+### Method Call with No Arguments <span id="method-invocation-parens-no-args"></span><span id="method-call-parens-no-args"></span>
 
 Always omit parentheses for method calls with no arguments.
 
-[source,ruby]
-----
-# bad
-Kernel.exit!()
-2.even?()
-fork()
-'test'.upcase()
+    # bad
+    Kernel.exit!()
+    2.even?()
+    fork()
+    'test'.upcase()
 
-# good
-Kernel.exit!
-2.even?
-fork
-'test'.upcase
-----
+    # good
+    Kernel.exit!
+    2.even?
+    fork
+    'test'.upcase
 
-==== Methods That are Part of an Internal DSL [[method-invocation-parens-internal-dsl]][[method-call-parens-internal-dsl]]
+### Methods That are Part of an Internal DSL <span id="method-invocation-parens-internal-dsl"></span><span id="method-call-parens-internal-dsl"></span>
 
 Always omit parentheses for methods that are part of an internal DSL (e.g., Rake, Rails, RSpec):
 
-[source,ruby]
-----
-# bad
-validates(:name, presence: true)
-# good
-validates :name, presence: true
-----
+    # bad
+    validates(:name, presence: true)
+    # good
+    validates :name, presence: true
 
-==== Methods That Have "keyword" Status in Ruby [[method-invocation-parens-keyword]][[method-call-parens-keyword]]
+### Methods That Have "keyword" Status in Ruby <span id="method-invocation-parens-keyword"></span><span id="method-call-parens-keyword"></span>
 
 Always omit parentheses for methods that have "keyword" status in Ruby.
 
-NOTE: Unfortunately, it's not exactly clear _which_ methods have "keyword" status.
-There is agreement that declarative methods have "keyword" status.
-However, there's less agreement on which non-declarative methods, if any, have "keyword" status.
+Unfortunately, it’s not exactly clear *which* methods have "keyword" status. There is agreement that declarative methods have "keyword" status. However, there’s less agreement on which non-declarative methods, if any, have "keyword" status.
 
-===== Declarative Methods That Have "keyword" Status in Ruby [[method-invocation-parens-declarative-keyword]][[method-call-parens-declarative-keyword]]
+#### Declarative Methods That Have "keyword" Status in Ruby <span id="method-invocation-parens-declarative-keyword"></span><span id="method-call-parens-declarative-keyword"></span>
 
 Always omit parentheses for declarative methods (a.k.a. DSL methods or macro methods) that have "keyword" status in Ruby (e.g., various `Module` instance methods):
 
-[source,ruby]
-----
-class Person
-  # bad
-  attr_reader(:name, :age)
-  # good
-  attr_reader :name, :age
+    class Person
+      # bad
+      attr_reader(:name, :age)
+      # good
+      attr_reader :name, :age
 
-  # body omitted
-end
-----
+      # body omitted
+    end
 
-===== Non-Declarative Methods That Have "keyword" Status in Ruby [[method-invocation-parens-non-declarative-keyword]][[method-call-parens-non-declarative-keyword]]
+#### Non-Declarative Methods That Have "keyword" Status in Ruby <span id="method-invocation-parens-non-declarative-keyword"></span><span id="method-call-parens-non-declarative-keyword"></span>
 
-For non-declarative methods with "keyword" status (e.g., various `Kernel` instance methods), two styles are considered acceptable.
-By far the most popular style is to omit parentheses.
-Rationale: The code reads better, and method calls look more like keywords.
-A less-popular style, but still acceptable, is to include parentheses.
-Rationale: The methods have ordinary semantics, so why treat them differently, and it's easier to achieve a uniform style by not worrying about which methods have "keyword" status.
-Whichever one you pick, apply it consistently.
+For non-declarative methods with "keyword" status (e.g., various `Kernel` instance methods), two styles are considered acceptable. By far the most popular style is to omit parentheses. Rationale: The code reads better, and method calls look more like keywords. A less-popular style, but still acceptable, is to include parentheses. Rationale: The methods have ordinary semantics, so why treat them differently, and it’s easier to achieve a uniform style by not worrying about which methods have "keyword" status. Whichever one you pick, apply it consistently.
 
-[source,ruby]
-----
-# good (most popular)
-puts temperance.age
-system 'ls'
-exit 1
+    # good (most popular)
+    puts temperance.age
+    system 'ls'
+    exit 1
 
-# also good (less popular)
-puts(temperance.age)
-system('ls')
-exit(1)
-----
+    # also good (less popular)
+    puts(temperance.age)
+    system('ls')
+    exit(1)
 
-==== Using `super` with Arguments  [[super-with-args]]
+### Using `super` with Arguments <span id="super-with-args"></span>
 
 Always use parentheses when calling `super` with arguments:
 
-[source,ruby]
-----
-# bad
-super name, age
+    # bad
+    super name, age
 
-# good
-super(name, age)
-----
+    # good
+    super(name, age)
 
-IMPORTANT: When calling `super` without arguments, `super` and `super()` mean different things. Decide what is appropriate for your usage.
+When calling `super` without arguments, `super` and `super()` mean different things. Decide what is appropriate for your usage.
 
-=== Too Many Params [[too-many-params]]
+## Too Many Params <span id="too-many-params"></span>
 
 Avoid parameter lists longer than three or four parameters.
 
+## Optional Arguments <span id="optional-arguments"></span>
 
-=== Optional Arguments [[optional-arguments]]
+Define optional arguments at the end of the list of arguments. Ruby has some unexpected results when calling methods that have optional arguments at the front of the list.
 
-Define optional arguments at the end of the list of arguments.
-Ruby has some unexpected results when calling methods that have optional arguments at the front of the list.
+    # bad
+    def some_method(a = 1, b = 2, c, d)
+      puts "#{a}, #{b}, #{c}, #{d}"
+    end
 
-[source,ruby]
-----
-# bad
-def some_method(a = 1, b = 2, c, d)
-  puts "#{a}, #{b}, #{c}, #{d}"
-end
+    some_method('w', 'x') # => '1, 2, w, x'
+    some_method('w', 'x', 'y') # => 'w, 2, x, y'
+    some_method('w', 'x', 'y', 'z') # => 'w, x, y, z'
 
-some_method('w', 'x') # => '1, 2, w, x'
-some_method('w', 'x', 'y') # => 'w, 2, x, y'
-some_method('w', 'x', 'y', 'z') # => 'w, x, y, z'
+    # good
+    def some_method(c, d, a = 1, b = 2)
+      puts "#{a}, #{b}, #{c}, #{d}"
+    end
 
-# good
-def some_method(c, d, a = 1, b = 2)
-  puts "#{a}, #{b}, #{c}, #{d}"
-end
+    some_method('w', 'x') # => '1, 2, w, x'
+    some_method('w', 'x', 'y') # => 'y, 2, w, x'
+    some_method('w', 'x', 'y', 'z') # => 'y, z, w, x'
 
-some_method('w', 'x') # => '1, 2, w, x'
-some_method('w', 'x', 'y') # => 'y, 2, w, x'
-some_method('w', 'x', 'y', 'z') # => 'y, z, w, x'
-----
+## Keyword Arguments Order
 
-=== Keyword Arguments Order
+Put required keyword arguments before optional keyword arguments. Otherwise, it’s much harder to spot optional arguments there, if they’re hidden somewhere in the middle.
 
-Put required keyword arguments before optional keyword arguments. Otherwise, it's much harder to spot optional arguments there, if they're hidden somewhere in the middle.
+    # bad
+    def some_method(foo: false, bar:, baz: 10)
+      # body omitted
+    end
 
-[source,ruby]
-----
-# bad
-def some_method(foo: false, bar:, baz: 10)
-  # body omitted
-end
+    # good
+    def some_method(foo:, bar: false, baz: 10)
+      # body omitted
+    end
 
-# good
-def some_method(foo:, bar: false, baz: 10)
-  # body omitted
-end
-----
-
-=== Boolean Keyword Arguments [[boolean-keyword-arguments]]
+## Boolean Keyword Arguments <span id="boolean-keyword-arguments"></span>
 
 Use keyword arguments when passing a boolean argument to a method.
 
-[source,ruby]
-----
-# bad
-def some_method(bar = false)
-  puts bar
-end
+    # bad
+    def some_method(bar = false)
+      puts bar
+    end
 
-# bad - common hack before keyword args were introduced
-def some_method(options = {})
-  bar = options.fetch(:bar, false)
-  puts bar
-end
+    # bad - common hack before keyword args were introduced
+    def some_method(options = {})
+      bar = options.fetch(:bar, false)
+      puts bar
+    end
 
-# good
-def some_method(bar: false)
-  puts bar
-end
+    # good
+    def some_method(bar: false)
+      puts bar
+    end
 
-some_method            # => false
-some_method(bar: true) # => true
-----
+    some_method            # => false
+    some_method(bar: true) # => true
 
-=== Keyword Arguments vs Optional Arguments [[keyword-arguments-vs-optional-arguments]]
+## Keyword Arguments vs Optional Arguments <span id="keyword-arguments-vs-optional-arguments"></span>
 
 Prefer keyword arguments over optional arguments.
 
-[source,ruby]
-----
-# bad
-def some_method(a, b = 5, c = 1)
-  # body omitted
-end
+    # bad
+    def some_method(a, b = 5, c = 1)
+      # body omitted
+    end
 
-# good
-def some_method(a, b: 5, c: 1)
-  # body omitted
-end
-----
+    # good
+    def some_method(a, b: 5, c: 1)
+      # body omitted
+    end
 
-=== Keyword Arguments vs Option Hashes [[keyword-arguments-vs-option-hashes]]
+## Keyword Arguments vs Option Hashes <span id="keyword-arguments-vs-option-hashes"></span>
 
 Use keyword arguments instead of option hashes.
 
-[source,ruby]
-----
-# bad
-def some_method(options = {})
-  bar = options.fetch(:bar, false)
-  puts bar
-end
+    # bad
+    def some_method(options = {})
+      bar = options.fetch(:bar, false)
+      puts bar
+    end
 
-# good
-def some_method(bar: false)
-  puts bar
-end
-----
+    # good
+    def some_method(bar: false)
+      puts bar
+    end
 
-=== Arguments Forwarding [[arguments-forwarding]]
+## Arguments Forwarding <span id="arguments-forwarding"></span>
 
-Use Ruby 2.7's arguments forwarding.
+Use Ruby 2.7’s arguments forwarding.
 
-[source,ruby]
-----
-# bad
-def some_method(*args, &block)
-  other_method(*args, &block)
-end
+    # bad
+    def some_method(*args, &block)
+      other_method(*args, &block)
+    end
 
-# bad
-def some_method(*args, **kwargs, &block)
-  other_method(*args, **kwargs, &block)
-end
+    # bad
+    def some_method(*args, **kwargs, &block)
+      other_method(*args, **kwargs, &block)
+    end
 
-# bad
-# Please note that it can cause unexpected incompatible behavior
-# because `...` forwards block also.
-# https://github.com/rubocop/rubocop/issues/7549
-def some_method(*args)
-  other_method(*args)
-end
+    # bad
+    # Please note that it can cause unexpected incompatible behavior
+    # because `...` forwards block also.
+    # https://github.com/rubocop/rubocop/issues/7549
+    def some_method(*args)
+      other_method(*args)
+    end
 
-# good
-def some_method(...)
-  other_method(...)
-end
-----
+    # good
+    def some_method(...)
+      other_method(...)
+    end
 
-=== Block Forwarding
+## Block Forwarding
 
-Use Ruby 3.1's anonymous block forwarding.
+Use Ruby 3.1’s anonymous block forwarding.
 
 In most cases, block argument is given name similar to `&block` or `&proc`. Their names have no information and `&` will be sufficient for syntactic meaning.
 
-[source,ruby]
-----
-# bad
-def some_method(&block)
-  other_method(&block)
-end
+    # bad
+    def some_method(&block)
+      other_method(&block)
+    end
 
-# good
-def some_method(&)
-  other_method(&)
-end
-----
+    # good
+    def some_method(&)
+      other_method(&)
+    end
 
-=== Private Global Methods [[private-global-methods]]
+## Private Global Methods <span id="private-global-methods"></span>
 
 If you really need "global" methods, add them to Kernel and make them private.
 
-== Classes & Modules
+# Classes & Modules
 
-=== Consistent Classes [[consistent-classes]]
+## Consistent Classes <span id="consistent-classes"></span>
 
 Use a consistent structure in your class definitions.
 
-[source,ruby]
-----
-class Person
-  # extend/include/prepend go first
-  extend SomeModule
-  include AnotherModule
-  prepend YetAnotherModule
+    class Person
+      # extend/include/prepend go first
+      extend SomeModule
+      include AnotherModule
+      prepend YetAnotherModule
 
-  # inner classes
-  CustomError = Class.new(StandardError)
+      # inner classes
+      CustomError = Class.new(StandardError)
 
-  # constants are next
-  SOME_CONSTANT = 20
+      # constants are next
+      SOME_CONSTANT = 20
 
-  # afterwards we have attribute macros
-  attr_reader :name
+      # afterwards we have attribute macros
+      attr_reader :name
 
-  # followed by other macros (if any)
-  validates :name
+      # followed by other macros (if any)
+      validates :name
 
-  # public class methods are next in line
-  def self.some_method
-  end
+      # public class methods are next in line
+      def self.some_method
+      end
 
-  # initialization goes between class methods and other instance methods
-  def initialize
-  end
+      # initialization goes between class methods and other instance methods
+      def initialize
+      end
 
-  # followed by other public instance methods
-  def some_method
-  end
+      # followed by other public instance methods
+      def some_method
+      end
 
-  # protected and private methods are grouped near the end
-  protected
+      # protected and private methods are grouped near the end
+      protected
 
-  def some_protected_method
-  end
+      def some_protected_method
+      end
 
-  private
+      private
 
-  def some_private_method
-  end
-end
-----
+      def some_private_method
+      end
+    end
 
-=== Mixin Grouping [[mixin-grouping]]
+## Mixin Grouping <span id="mixin-grouping"></span>
 
 Split multiple mixins into separate statements.
 
-[source,ruby]
-----
-# bad
-class Person
-  include Foo, Bar
-end
+    # bad
+    class Person
+      include Foo, Bar
+    end
 
-# good
-class Person
-  # multiple mixins go in separate statements
-  include Foo
-  include Bar
-end
-----
+    # good
+    class Person
+      # multiple mixins go in separate statements
+      include Foo
+      include Bar
+    end
 
-=== Single-line Classes [[single-line-classes]]
+## Single-line Classes <span id="single-line-classes"></span>
 
 Prefer a two-line format for class definitions with no body. It is easiest to read, understand, and modify.
 
-[source,ruby]
-----
-# bad
-FooError = Class.new(StandardError)
+    # bad
+    FooError = Class.new(StandardError)
 
-# okish
-class FooError < StandardError; end
+    # okish
+    class FooError < StandardError; end
 
-# ok
-class FooError < StandardError
-end
-----
-
-NOTE: Many editors/tools will fail to understand properly the usage of `Class.new`.
-Someone trying to locate the class definition might try a grep "class FooError".
-A final difference is that the name of your class is not available to the `inherited`
-callback of the base class with the `Class.new` form.
-In general it's better to stick to the basic two-line style.
-
-=== File Classes [[file-classes]]
-
-Don't nest multi-line classes within classes.
-Try to have such nested classes each in their own file in a folder named like the containing class.
-
-[source,ruby]
-----
-# bad
-
-# foo.rb
-class Foo
-  class Bar
-    # 30 methods inside
-  end
-
-  class Car
-    # 20 methods inside
-  end
-
-  # 30 methods inside
-end
-
-# good
-
-# foo.rb
-class Foo
-  # 30 methods inside
-end
-
-# foo/bar.rb
-class Foo
-  class Bar
-    # 30 methods inside
-  end
-end
-
-# foo/car.rb
-class Foo
-  class Car
-    # 20 methods inside
-  end
-end
-----
-
-=== Namespace Definition [[namespace-definition]]
-
-Define (and reopen) namespaced classes and modules using explicit nesting.
-Using the scope resolution operator can lead to surprising constant lookups due to Ruby's https://cirw.in/blog/constant-lookup.html[lexical scoping], which depends on the module nesting at the point of definition.
-
-[source,ruby]
-----
-module Utilities
-  class Queue
-  end
-end
-
-# bad
-class Utilities::Store
-  Module.nesting # => [Utilities::Store]
-
-  def initialize
-    # Refers to the top level ::Queue class because Utilities isn't in the
-    # current nesting chain.
-    @queue = Queue.new
-  end
-end
-
-# good
-module Utilities
-  class WaitingList
-    Module.nesting # => [Utilities::WaitingList, Utilities]
-
-    def initialize
-      @queue = Queue.new # Refers to Utilities::Queue
+    # ok
+    class FooError < StandardError
     end
-  end
-end
-----
 
-=== Modules vs Classes [[modules-vs-classes]]
+Many editors/tools will fail to understand properly the usage of `Class.new`. Someone trying to locate the class definition might try a grep "class FooError". A final difference is that the name of your class is not available to the `inherited` callback of the base class with the `Class.new` form. In general it’s better to stick to the basic two-line style.
 
-Prefer modules to classes with only class methods.
-Classes should be used only when it makes sense to create instances out of them.
+## File Classes <span id="file-classes"></span>
 
-[source,ruby]
-----
-# bad
-class SomeClass
-  def self.some_method
-    # body omitted
-  end
+Don’t nest multi-line classes within classes. Try to have such nested classes each in their own file in a folder named like the containing class.
 
-  def self.some_other_method
-    # body omitted
-  end
-end
+    # bad
 
-# good
-module SomeModule
-  module_function
+    # foo.rb
+    class Foo
+      class Bar
+        # 30 methods inside
+      end
 
-  def some_method
-    # body omitted
-  end
+      class Car
+        # 20 methods inside
+      end
 
-  def some_other_method
-    # body omitted
-  end
-end
-----
+      # 30 methods inside
+    end
 
-=== `module_function` [[module-function]]
+    # good
 
-Prefer the use of `module_function` over `extend self` when you want to turn a module's instance methods into class methods.
+    # foo.rb
+    class Foo
+      # 30 methods inside
+    end
 
-[source,ruby]
-----
-# bad
-module Utilities
-  extend self
+    # foo/bar.rb
+    class Foo
+      class Bar
+        # 30 methods inside
+      end
+    end
 
-  def parse_something(string)
-    # do stuff here
-  end
+    # foo/car.rb
+    class Foo
+      class Car
+        # 20 methods inside
+      end
+    end
 
-  def other_utility_method(number, string)
-    # do some more stuff
-  end
-end
+## Namespace Definition <span id="namespace-definition"></span>
 
-# good
-module Utilities
-  module_function
+Define (and reopen) namespaced classes and modules using explicit nesting. Using the scope resolution operator can lead to surprising constant lookups due to Ruby’s [lexical scoping](https://cirw.in/blog/constant-lookup.html), which depends on the module nesting at the point of definition.
 
-  def parse_something(string)
-    # do stuff here
-  end
+    module Utilities
+      class Queue
+      end
+    end
 
-  def other_utility_method(number, string)
-    # do some more stuff
-  end
-end
-----
+    # bad
+    class Utilities::Store
+      Module.nesting # => [Utilities::Store]
 
-=== Liskov [[liskov]]
+      def initialize
+        # Refers to the top level ::Queue class because Utilities isn't in the
+        # current nesting chain.
+        @queue = Queue.new
+      end
+    end
 
-When designing class hierarchies make sure that they conform to the https://en.wikipedia.org/wiki/Liskov_substitution_principle[Liskov Substitution Principle].
+    # good
+    module Utilities
+      class WaitingList
+        Module.nesting # => [Utilities::WaitingList, Utilities]
 
-=== SOLID design [[solid-design]]
+        def initialize
+          @queue = Queue.new # Refers to Utilities::Queue
+        end
+      end
+    end
 
-Try to make your classes as https://en.wikipedia.org/wiki/SOLID[SOLID] as possible.
+## Modules vs Classes <span id="modules-vs-classes"></span>
 
-=== Define `to_s` [[define-to-s]]
+Prefer modules to classes with only class methods. Classes should be used only when it makes sense to create instances out of them.
+
+    # bad
+    class SomeClass
+      def self.some_method
+        # body omitted
+      end
+
+      def self.some_other_method
+        # body omitted
+      end
+    end
+
+    # good
+    module SomeModule
+      module_function
+
+      def some_method
+        # body omitted
+      end
+
+      def some_other_method
+        # body omitted
+      end
+    end
+
+## `module_function` <span id="module-function"></span>
+
+Prefer the use of `module_function` over `extend self` when you want to turn a module’s instance methods into class methods.
+
+    # bad
+    module Utilities
+      extend self
+
+      def parse_something(string)
+        # do stuff here
+      end
+
+      def other_utility_method(number, string)
+        # do some more stuff
+      end
+    end
+
+    # good
+    module Utilities
+      module_function
+
+      def parse_something(string)
+        # do stuff here
+      end
+
+      def other_utility_method(number, string)
+        # do some more stuff
+      end
+    end
+
+## Liskov <span id="liskov"></span>
+
+When designing class hierarchies make sure that they conform to the [Liskov Substitution Principle](https://en.wikipedia.org/wiki/Liskov_substitution_principle).
+
+## SOLID design <span id="solid-design"></span>
+
+Try to make your classes as [SOLID](https://en.wikipedia.org/wiki/SOLID) as possible.
+
+## Define `to_s` <span id="define-to-s"></span>
 
 Always supply a proper `to_s` method for classes that represent domain objects.
 
-[source,ruby]
-----
-class Person
-  attr_reader :first_name, :last_name
+    class Person
+      attr_reader :first_name, :last_name
 
-  def initialize(first_name, last_name)
-    @first_name = first_name
-    @last_name = last_name
-  end
+      def initialize(first_name, last_name)
+        @first_name = first_name
+        @last_name = last_name
+      end
 
-  def to_s
-    "#{first_name} #{last_name}"
-  end
-end
-----
+      def to_s
+        "#{first_name} #{last_name}"
+      end
+    end
 
-=== `attr` Family [[attr_family]]
+## `attr` Family <span id="attr_family"></span>
 
 Use the `attr` family of functions to define trivial accessors or mutators.
 
-[source,ruby]
-----
-# bad
-class Person
-  def initialize(first_name, last_name)
-    @first_name = first_name
-    @last_name = last_name
-  end
+    # bad
+    class Person
+      def initialize(first_name, last_name)
+        @first_name = first_name
+        @last_name = last_name
+      end
 
-  def first_name
-    @first_name
-  end
+      def first_name
+        @first_name
+      end
 
-  def last_name
-    @last_name
-  end
-end
+      def last_name
+        @last_name
+      end
+    end
 
-# good
-class Person
-  attr_reader :first_name, :last_name
+    # good
+    class Person
+      attr_reader :first_name, :last_name
 
-  def initialize(first_name, last_name)
-    @first_name = first_name
-    @last_name = last_name
-  end
-end
-----
+      def initialize(first_name, last_name)
+        @first_name = first_name
+        @last_name = last_name
+      end
+    end
 
-=== Accessor/Mutator Method Names [[accessor_mutator_method_names]]
+## Accessor/Mutator Method Names <span id="accessor_mutator_method_names"></span>
 
-For accessors and mutators, avoid prefixing method names with `get_` and `set_`.
-It is a Ruby convention to use attribute names for accessors (readers) and `attr_name=` for mutators (writers).
+For accessors and mutators, avoid prefixing method names with `get_` and `set_`. It is a Ruby convention to use attribute names for accessors (readers) and `attr_name=` for mutators (writers).
 
-[source,ruby]
-----
-# bad
-class Person
-  def get_name
-    "#{@first_name} #{@last_name}"
-  end
+    # bad
+    class Person
+      def get_name
+        "#{@first_name} #{@last_name}"
+      end
 
-  def set_name(name)
-    @first_name, @last_name = name.split(' ')
-  end
-end
+      def set_name(name)
+        @first_name, @last_name = name.split(' ')
+      end
+    end
 
-# good
-class Person
-  def name
-    "#{@first_name} #{@last_name}"
-  end
+    # good
+    class Person
+      def name
+        "#{@first_name} #{@last_name}"
+      end
 
-  def name=(name)
-    @first_name, @last_name = name.split(' ')
-  end
-end
-----
+      def name=(name)
+        @first_name, @last_name = name.split(' ')
+      end
+    end
 
-=== `attr` [[attr]]
+## `attr` <span id="attr"></span>
 
-Avoid the use of `attr`.
-Use `attr_reader` and `attr_accessor` instead.
+Avoid the use of `attr`. Use `attr_reader` and `attr_accessor` instead.
 
-[source,ruby]
-----
-# bad - creates a single attribute accessor (deprecated in Ruby 1.9)
-attr :something, true
-attr :one, :two, :three # behaves as attr_reader
+    # bad - creates a single attribute accessor (deprecated in Ruby 1.9)
+    attr :something, true
+    attr :one, :two, :three # behaves as attr_reader
 
-# good
-attr_accessor :something
-attr_reader :one, :two, :three
-----
+    # good
+    attr_accessor :something
+    attr_reader :one, :two, :three
 
-=== `Struct.new` [[struct-new]]
+## `Struct.new` <span id="struct-new"></span>
 
 Consider using `Struct.new`, which defines the trivial accessors, constructor and comparison operators for you.
 
-[source,ruby]
-----
-# good
-class Person
-  attr_accessor :first_name, :last_name
+    # good
+    class Person
+      attr_accessor :first_name, :last_name
 
-  def initialize(first_name, last_name)
-    @first_name = first_name
-    @last_name = last_name
-  end
-end
+      def initialize(first_name, last_name)
+        @first_name = first_name
+        @last_name = last_name
+      end
+    end
 
-# better
-Person = Struct.new(:first_name, :last_name) do
-end
-----
+    # better
+    Person = Struct.new(:first_name, :last_name) do
+    end
 
-=== Don't Extend `Struct.new` [[no-extend-struct-new]]
+## Don’t Extend `Struct.new` <span id="no-extend-struct-new"></span>
 
-Don't extend an instance initialized by `Struct.new`.
-Extending it introduces a superfluous class level and may also introduce weird errors if the file is required multiple times.
+Don’t extend an instance initialized by `Struct.new`. Extending it introduces a superfluous class level and may also introduce weird errors if the file is required multiple times.
 
-[source,ruby]
-----
-# bad
-class Person < Struct.new(:first_name, :last_name)
-end
+    # bad
+    class Person < Struct.new(:first_name, :last_name)
+    end
 
-# good
-Person = Struct.new(:first_name, :last_name)
-----
+    # good
+    Person = Struct.new(:first_name, :last_name)
 
-=== Duck Typing [[duck-typing]]
+## Duck Typing <span id="duck-typing"></span>
 
-Prefer https://en.wikipedia.org/wiki/Duck_typing[duck-typing] over inheritance.
+Prefer [duck-typing](https://en.wikipedia.org/wiki/Duck_typing) over inheritance.
 
-[source,ruby]
-----
-# bad
-class Animal
-  # abstract method
-  def speak
-  end
-end
+    # bad
+    class Animal
+      # abstract method
+      def speak
+      end
+    end
 
-# extend superclass
-class Duck < Animal
-  def speak
-    puts 'Quack! Quack'
-  end
-end
+    # extend superclass
+    class Duck < Animal
+      def speak
+        puts 'Quack! Quack'
+      end
+    end
 
-# extend superclass
-class Dog < Animal
-  def speak
-    puts 'Bau! Bau!'
-  end
-end
+    # extend superclass
+    class Dog < Animal
+      def speak
+        puts 'Bau! Bau!'
+      end
+    end
 
-# good
-class Duck
-  def speak
-    puts 'Quack! Quack'
-  end
-end
+    # good
+    class Duck
+      def speak
+        puts 'Quack! Quack'
+      end
+    end
 
-class Dog
-  def speak
-    puts 'Bau! Bau!'
-  end
-end
-----
+    class Dog
+      def speak
+        puts 'Bau! Bau!'
+      end
+    end
 
-=== No Class Vars [[no-class-vars]]
+## No Class Vars <span id="no-class-vars"></span>
 
 Avoid the usage of class (`@@`) variables due to their "nasty" behavior in inheritance.
 
-[source,ruby]
-----
-class Parent
-  @@class_var = 'parent'
+    class Parent
+      @@class_var = 'parent'
 
-  def self.print_class_var
-    puts @@class_var
-  end
-end
-
-class Child < Parent
-  @@class_var = 'child'
-end
-
-Parent.print_class_var # => will print 'child'
-----
-
-As you can see all the classes in a class hierarchy actually share one class variable.
-Class instance variables should usually be preferred over class variables.
-
-=== Leverage Access Modifiers (e.g. `private` and `protected`) [[visibility]]
-
-Assign proper visibility levels to methods (`private`, `protected`) in accordance with their intended usage.
-Don't go off leaving everything `public` (which is the default).
-
-=== Access Modifiers Indentation [[indent-public-private-protected]]
-
-Indent the `public`, `protected`, and `private` methods as much as the method definitions they apply to.
-Leave one blank line above the visibility modifier and one blank line below in order to emphasize that it applies to all methods below it.
-
-[source,ruby]
-----
-# good
-class SomeClass
-  def public_method
-    # some code
-  end
-
-  private
-
-  def private_method
-    # some code
-  end
-
-  def another_private_method
-    # some code
-  end
-end
-----
-
-=== Defining Class Methods [[def-self-class-methods]]
-
-Use `def self.method` to define class methods.
-This makes the code easier to refactor since the class name is not repeated.
-
-[source,ruby]
-----
-class TestClass
-  # bad
-  def TestClass.some_method
-    # body omitted
-  end
-
-  # good
-  def self.some_other_method
-    # body omitted
-  end
-
-  # Also possible and convenient when you
-  # have to define many class methods.
-  class << self
-    def first_method
-      # body omitted
+      def self.print_class_var
+        puts @@class_var
+      end
     end
 
-    def second_method_etc
-      # body omitted
+    class Child < Parent
+      @@class_var = 'child'
     end
-  end
-end
-----
 
-=== Alias Method Lexically [[alias-method-lexically]]
+    Parent.print_class_var # => will print 'child'
+
+As you can see all the classes in a class hierarchy actually share one class variable. Class instance variables should usually be preferred over class variables.
+
+## Leverage Access Modifiers (e.g. `private` and `protected`) <span id="visibility"></span>
+
+Assign proper visibility levels to methods (`private`, `protected`) in accordance with their intended usage. Don’t go off leaving everything `public` (which is the default).
+
+## Access Modifiers Indentation <span id="indent-public-private-protected"></span>
+
+Indent the `public`, `protected`, and `private` methods as much as the method definitions they apply to. Leave one blank line above the visibility modifier and one blank line below in order to emphasize that it applies to all methods below it.
+
+    # good
+    class SomeClass
+      def public_method
+        # some code
+      end
+
+      private
+
+      def private_method
+        # some code
+      end
+
+      def another_private_method
+        # some code
+      end
+    end
+
+## Defining Class Methods <span id="def-self-class-methods"></span>
+
+Use `def self.method` to define class methods. This makes the code easier to refactor since the class name is not repeated.
+
+    class TestClass
+      # bad
+      def TestClass.some_method
+        # body omitted
+      end
+
+      # good
+      def self.some_other_method
+        # body omitted
+      end
+
+      # Also possible and convenient when you
+      # have to define many class methods.
+      class << self
+        def first_method
+          # body omitted
+        end
+
+        def second_method_etc
+          # body omitted
+        end
+      end
+    end
+
+## Alias Method Lexically <span id="alias-method-lexically"></span>
 
 Prefer `alias` when aliasing methods in lexical class scope as the resolution of `self` in this context is also lexical, and it communicates clearly to the user that the indirection of your alias will not be altered at runtime or by any subclass unless made explicit.
 
-[source,ruby]
-----
-class Westerner
-  def first_name
-    @names.first
-  end
+    class Westerner
+      def first_name
+        @names.first
+      end
 
-  alias given_name first_name
-end
-----
+      alias given_name first_name
+    end
 
-Since `alias`, like `def`, is a keyword, prefer bareword arguments over symbols or strings.
-In other words, do `alias foo bar`, not `alias :foo :bar`.
+Since `alias`, like `def`, is a keyword, prefer bareword arguments over symbols or strings. In other words, do `alias foo bar`, not `alias :foo :bar`.
 
 Also be aware of how Ruby handles aliases and inheritance: an alias references the method that was resolved at the time the alias was defined; it is not dispatched dynamically.
 
-[source,ruby]
-----
-class Fugitive < Westerner
-  def first_name
-    'Nobody'
-  end
-end
-----
+    class Fugitive < Westerner
+      def first_name
+        'Nobody'
+      end
+    end
 
-In this example, `Fugitive#given_name` would still call the original `Westerner#first_name` method, not `Fugitive#first_name`.
-To override the behavior of `Fugitive#given_name` as well, you'd have to redefine it in the derived class.
+In this example, `Fugitive#given_name` would still call the original `Westerner#first_name` method, not `Fugitive#first_name`. To override the behavior of `Fugitive#given_name` as well, you’d have to redefine it in the derived class.
 
-[source,ruby]
-----
-class Fugitive < Westerner
-  def first_name
-    'Nobody'
-  end
+    class Fugitive < Westerner
+      def first_name
+        'Nobody'
+      end
 
-  alias given_name first_name
-end
-----
+      alias given_name first_name
+    end
 
-=== `alias_method` [[alias-method]]
+## `alias_method` <span id="alias-method"></span>
 
 Always use `alias_method` when aliasing methods of modules, classes, or singleton classes at runtime, as the lexical scope of `alias` leads to unpredictability in these cases.
 
-[source,ruby]
-----
-module Mononymous
-  def self.included(other)
-    other.class_eval { alias_method :full_name, :given_name }
-  end
-end
+    module Mononymous
+      def self.included(other)
+        other.class_eval { alias_method :full_name, :given_name }
+      end
+    end
 
-class Sting < Westerner
-  include Mononymous
-end
-----
+    class Sting < Westerner
+      include Mononymous
+    end
 
-=== Class and `self` [[class-and-self]]
+## Class and `self` <span id="class-and-self"></span>
 
-When class (or module) methods call other such methods, omit the use of a leading `self` or own name followed by a `.` when calling other such methods.
-This is often seen in "service classes" or other similar concepts where a class is treated as though it were a function.
-This convention tends to reduce repetitive boilerplate in such classes.
+When class (or module) methods call other such methods, omit the use of a leading `self` or own name followed by a `.` when calling other such methods. This is often seen in "service classes" or other similar concepts where a class is treated as though it were a function. This convention tends to reduce repetitive boilerplate in such classes.
 
-[source,ruby]
-----
-class TestClass
-  # bad -- more work when class renamed/method moved
-  def self.call(param1, param2)
-    TestClass.new(param1).call(param2)
-  end
+    class TestClass
+      # bad -- more work when class renamed/method moved
+      def self.call(param1, param2)
+        TestClass.new(param1).call(param2)
+      end
 
-  # bad -- more verbose than necessary
-  def self.call(param1, param2)
-    self.new(param1).call(param2)
-  end
+      # bad -- more verbose than necessary
+      def self.call(param1, param2)
+        self.new(param1).call(param2)
+      end
 
-  # good
-  def self.call(param1, param2)
-    new(param1).call(param2)
-  end
+      # good
+      def self.call(param1, param2)
+        new(param1).call(param2)
+      end
 
-  # ...other methods...
-end
-----
+      # ...other methods...
+    end
 
-=== Defining Constants within a Block [[no-constant-definition-in-block]]
+## Defining Constants within a Block <span id="no-constant-definition-in-block"></span>
 
-Do not define constants within a block, since the block's scope does not isolate or namespace the constant in any way.
+Do not define constants within a block, since the block’s scope does not isolate or namespace the constant in any way.
 
 Define the constant outside of the block instead, or use a variable or method if defining the constant in the outer scope would be problematic.
 
-[source,ruby]
-----
-# bad - FILES_TO_LINT is now defined globally
-task :lint do
-  FILES_TO_LINT = Dir['lib/*.rb']
-  # ...
-end
+    # bad - FILES_TO_LINT is now defined globally
+    task :lint do
+      FILES_TO_LINT = Dir['lib/*.rb']
+      # ...
+    end
 
-# good - files_to_lint is only defined inside the block
-task :lint do
-  files_to_lint = Dir['lib/*.rb']
-  # ...
-end
-----
+    # good - files_to_lint is only defined inside the block
+    task :lint do
+      files_to_lint = Dir['lib/*.rb']
+      # ...
+    end
 
-== Classes: Constructors
+# Classes: Constructors
 
-=== Factory Methods [[factory-methods]]
+## Factory Methods <span id="factory-methods"></span>
 
 Consider adding factory methods to provide additional sensible ways to create instances of a particular class.
 
-[source,ruby]
-----
-class Person
-  def self.create(options_hash)
-    # body omitted
-  end
-end
-----
+    class Person
+      def self.create(options_hash)
+        # body omitted
+      end
+    end
 
-=== Disjunctive Assignment in Constructor [[disjunctive-assignment-in-constructor]]
+## Disjunctive Assignment in Constructor <span id="disjunctive-assignment-in-constructor"></span>
 
-In constructors, avoid unnecessary disjunctive assignment (`||=`) of instance variables.
-Prefer plain assignment.
-In ruby, instance variables (beginning with an `@`) are nil until assigned a value, so in most cases the disjunction is unnecessary.
+In constructors, avoid unnecessary disjunctive assignment (`||=`) of instance variables. Prefer plain assignment. In ruby, instance variables (beginning with an `@`) are nil until assigned a value, so in most cases the disjunction is unnecessary.
 
-[source,ruby]
-----
-# bad
-def initialize
-  @x ||= 1
-end
+    # bad
+    def initialize
+      @x ||= 1
+    end
 
-# good
-def initialize
-  @x = 1
-end
-----
+    # good
+    def initialize
+      @x = 1
+    end
 
-== Comments
+# Comments
 
-[quote, Steve McConnell]
-____
-Good code is its own best documentation.
-As you're about to add a comment, ask yourself, "How can I improve the code so that this comment isn't needed?".
-Improve the code and then document it to make it even clearer.
-____
+> Good code is its own best documentation. As you’re about to add a comment, ask yourself, "How can I improve the code so that this comment isn’t needed?". Improve the code and then document it to make it even clearer.
+>
+> —  Steve McConnell
 
-=== No Comments [[no-comments]]
+## No Comments <span id="no-comments"></span>
 
 Write self-documenting code and ignore the rest of this section. Seriously!
 
-=== Rationale Comments [[rationale-comments]]
+## Rationale Comments <span id="rationale-comments"></span>
 
-If the _how_ can be made self-documenting, but not the _why_ (e.g. the code works around non-obvious library behavior, or implements an algorithm from an academic paper), add a comment explaining the rationale behind the code.
+If the *how* can be made self-documenting, but not the *why* (e.g. the code works around non-obvious library behavior, or implements an algorithm from an academic paper), add a comment explaining the rationale behind the code.
 
-[source,ruby]
-----
-# bad
+    # bad
 
-x = BuggyClass.something.dup
+    x = BuggyClass.something.dup
 
-def compute_dependency_graph
-  ...30 lines of recursive graph merging...
-end
+    def compute_dependency_graph
+      ...30 lines of recursive graph merging...
+    end
 
-# good
+    # good
 
-# BuggyClass returns an internal object, so we have to dup it to modify it.
-x = BuggyClass.something.dup
+    # BuggyClass returns an internal object, so we have to dup it to modify it.
+    x = BuggyClass.something.dup
 
-# This is algorithm 6.4(a) from Worf & Yar's _Amazing Graph Algorithms_ (2243).
-def compute_dependency_graph
-  ...30 lines of recursive graph merging...
-end
-----
+    # This is algorithm 6.4(a) from Worf & Yar's _Amazing Graph Algorithms_ (2243).
+    def compute_dependency_graph
+      ...30 lines of recursive graph merging...
+    end
 
-=== English Comments [[english-comments]]
+## English Comments <span id="english-comments"></span>
 
 Write comments in English.
 
-=== Hash Space [[hash-space]]
+## Hash Space <span id="hash-space"></span>
 
 Use one space between the leading `#` character of the comment and the text of the comment.
 
-=== English Syntax [[english-syntax]]
+## English Syntax <span id="english-syntax"></span>
 
-Comments longer than a word are capitalized and use punctuation.
-Use https://en.wikipedia.org/wiki/Sentence_spacing[one space] after periods.
+Comments longer than a word are capitalized and use punctuation. Use [one space](https://en.wikipedia.org/wiki/Sentence_spacing) after periods.
 
-=== No Superfluous Comments [[no-superfluous-comments]]
+## No Superfluous Comments <span id="no-superfluous-comments"></span>
 
 Avoid superfluous comments.
 
-[source,ruby]
-----
-# bad
-counter += 1 # Increments counter by one.
-----
+    # bad
+    counter += 1 # Increments counter by one.
 
-=== Comment Upkeep [[comment-upkeep]]
+## Comment Upkeep <span id="comment-upkeep"></span>
 
-Keep existing comments up-to-date.
-An outdated comment is worse than no comment at all.
+Keep existing comments up-to-date. An outdated comment is worse than no comment at all.
 
-=== Refactor, Don't Comment [[refactor-dont-comment]]
+## Refactor, Don’t Comment <span id="refactor-dont-comment"></span>
 
-[quote, old programmers maxim, 'https://eloquentruby.com/blog/2011/03/07/good-code-and-good-jokes/[through Russ Olsen]']
-____
-Good code is like a good joke: it needs no explanation.
-____
+> Good code is like a good joke: it needs no explanation.
+>
+> —  old programmers maxim [through Russ Olsen](https://eloquentruby.com/blog/2011/03/07/good-code-and-good-jokes/)
 
-Avoid writing comments to explain bad code.
-Refactor the code to make it self-explanatory.
-("Do or do not - there is no try." Yoda)
+Avoid writing comments to explain bad code. Refactor the code to make it self-explanatory. ("Do or do not - there is no try." Yoda)
 
-== Comment Annotations
+# Comment Annotations
 
-=== Annotations Placement [[annotate-above]]
+## Annotations Placement <span id="annotate-above"></span>
 
 Annotations should usually be written on the line immediately above the relevant code.
 
-[source,ruby]
-----
-# bad
-def bar
-  baz(:quux) # FIXME: This has crashed occasionally since v3.2.1.
-end
+    # bad
+    def bar
+      baz(:quux) # FIXME: This has crashed occasionally since v3.2.1.
+    end
 
-# good
-def bar
-  # FIXME: This has crashed occasionally since v3.2.1.
-  baz(:quux)
-end
-----
+    # good
+    def bar
+      # FIXME: This has crashed occasionally since v3.2.1.
+      baz(:quux)
+    end
 
-=== Annotations Keyword Format [[annotate-keywords]]
+## Annotations Keyword Format <span id="annotate-keywords"></span>
 
 The annotation keyword is followed by a colon and a space, then a note describing the problem.
 
-[source,ruby]
-----
-# bad
-def bar
-  # FIXME This has crashed occasionally since v3.2.1.
-  baz(:quux)
-end
+    # bad
+    def bar
+      # FIXME This has crashed occasionally since v3.2.1.
+      baz(:quux)
+    end
 
-# good
-def bar
-  # FIXME: This has crashed occasionally since v3.2.1.
-  baz(:quux)
-end
-----
+    # good
+    def bar
+      # FIXME: This has crashed occasionally since v3.2.1.
+      baz(:quux)
+    end
 
-=== Multi-line Annotations Indentation [[indent-annotations]]
+## Multi-line Annotations Indentation <span id="indent-annotations"></span>
 
 If multiple lines are required to describe the problem, subsequent lines should be indented three spaces after the `#` (one general plus two for indentation purposes).
 
-[source,ruby]
-----
-def bar
-  # FIXME: This has crashed occasionally since v3.2.1. It may
-  #   be related to the BarBazUtil upgrade.
-  baz(:quux)
-end
-----
+    def bar
+      # FIXME: This has crashed occasionally since v3.2.1. It may
+      #   be related to the BarBazUtil upgrade.
+      baz(:quux)
+    end
 
-=== Inline Annotations [[rare-eol-annotations]]
+## Inline Annotations <span id="rare-eol-annotations"></span>
 
-In cases where the problem is so obvious that any documentation would be redundant, annotations may be left at the end of the offending line with no note.
-This usage should be the exception and not the rule.
+In cases where the problem is so obvious that any documentation would be redundant, annotations may be left at the end of the offending line with no note. This usage should be the exception and not the rule.
 
-[source,ruby]
-----
-def bar
-  sleep 100 # OPTIMIZE
-end
-----
+    def bar
+      sleep 100 # OPTIMIZE
+    end
 
-=== `TODO` [[todo]]
+## `TODO` <span id="todo"></span>
 
 Use `TODO` to note missing features or functionality that should be added at a later date.
 
-=== `FIXME` [[fixme]]
+## `FIXME` <span id="fixme"></span>
 
 Use `FIXME` to note broken code that needs to be fixed.
 
-=== `OPTIMIZE` [[optimize]]
+## `OPTIMIZE` <span id="optimize"></span>
 
 Use `OPTIMIZE` to note slow or inefficient code that may cause performance problems.
 
-=== `HACK` [[hack]]
+## `HACK` <span id="hack"></span>
 
 Use `HACK` to note code smells where questionable coding practices were used and should be refactored away.
 
-=== `REVIEW` [[review]]
+## `REVIEW` <span id="review"></span>
 
-Use `REVIEW` to note anything that should be looked at to confirm it is working as intended.
-For example: `REVIEW: Are we sure this is how the client does X currently?`
+Use `REVIEW` to note anything that should be looked at to confirm it is working as intended. For example: `REVIEW: Are we sure this is how the client does X currently?`
 
-=== Document Annotations [[document-annotations]]
+## Document Annotations <span id="document-annotations"></span>
 
-Use other custom annotation keywords if it feels appropriate, but be sure to document them in your project's `README` or similar.
+Use other custom annotation keywords if it feels appropriate, but be sure to document them in your project’s `README` or similar.
 
-== Magic Comments
+# Magic Comments
 
-=== Magic Comments First [[magic-comments-first]]
+## Magic Comments First <span id="magic-comments-first"></span>
 
 Place magic comments above all code and documentation in a file (except shebangs, which are discussed next).
 
-[source,ruby]
-----
-# bad
-# Some documentation about Person
+    # bad
+    # Some documentation about Person
 
-# frozen_string_literal: true
-class Person
-end
+    # frozen_string_literal: true
+    class Person
+    end
 
-# good
-# frozen_string_literal: true
+    # good
+    # frozen_string_literal: true
 
-# Some documentation about Person
-class Person
-end
-----
+    # Some documentation about Person
+    class Person
+    end
 
-=== Below Shebang [[below-shebang]]
+## Below Shebang <span id="below-shebang"></span>
 
 Place magic comments below shebangs when they are present in a file.
 
-[source,ruby]
-----
-# bad
-# frozen_string_literal: true
-#!/usr/bin/env ruby
+    # bad
+    # frozen_string_literal: true
+    #!/usr/bin/env ruby
 
-App.parse(ARGV)
+    App.parse(ARGV)
 
-# good
-#!/usr/bin/env ruby
-# frozen_string_literal: true
+    # good
+    #!/usr/bin/env ruby
+    # frozen_string_literal: true
 
-App.parse(ARGV)
-----
+    App.parse(ARGV)
 
-=== One Magic Comment per Line [[one-magic-comment-per-line]]
+## One Magic Comment per Line <span id="one-magic-comment-per-line"></span>
 
 Use one magic comment per line if you need multiple.
 
-[source,ruby]
-----
-# bad
-# -*- frozen_string_literal: true; encoding: ascii-8bit -*-
+    # bad
+    # -*- frozen_string_literal: true; encoding: ascii-8bit -*-
 
-# good
-# frozen_string_literal: true
-# encoding: ascii-8bit
-----
+    # good
+    # frozen_string_literal: true
+    # encoding: ascii-8bit
 
-=== Separate Magic Comments from Code [[separate-magic-comments-from-code]]
+## Separate Magic Comments from Code <span id="separate-magic-comments-from-code"></span>
 
 Separate magic comments from code and documentation with a blank line.
 
-[source,ruby]
-----
-# bad
-# frozen_string_literal: true
-# Some documentation for Person
-class Person
-  # Some code
-end
+    # bad
+    # frozen_string_literal: true
+    # Some documentation for Person
+    class Person
+      # Some code
+    end
 
-# good
-# frozen_string_literal: true
+    # good
+    # frozen_string_literal: true
 
-# Some documentation for Person
-class Person
-  # Some code
-end
-----
+    # Some documentation for Person
+    class Person
+      # Some code
+    end
 
-== Collections
+# Collections
 
-=== Literal Array and Hash [[literal-array-hash]]
+## Literal Array and Hash <span id="literal-array-hash"></span>
 
 Prefer literal array and hash creation notation (unless you need to pass parameters to their constructors, that is).
 
-[source,ruby]
-----
-# bad
-arr = Array.new
-hash = Hash.new
+    # bad
+    arr = Array.new
+    hash = Hash.new
 
-# good
-arr = []
-arr = Array.new(10)
-hash = {}
-hash = Hash.new(0)
-----
+    # good
+    arr = []
+    arr = Array.new(10)
+    hash = {}
+    hash = Hash.new(0)
 
-=== `%w` [[percent-w]]
+## `%w` <span id="percent-w"></span>
 
-Prefer `%w` to the literal array syntax when you need an array of words (non-empty strings without spaces and special characters in them).
-Apply this rule only to arrays with two or more elements.
+Prefer `%w` to the literal array syntax when you need an array of words (non-empty strings without spaces and special characters in them). Apply this rule only to arrays with two or more elements.
 
-[source,ruby]
-----
-# bad
-STATES = ['draft', 'open', 'closed']
+    # bad
+    STATES = ['draft', 'open', 'closed']
 
-# good
-STATES = %w[draft open closed]
-----
+    # good
+    STATES = %w[draft open closed]
 
-=== `%i` [[percent-i]]
+## `%i` <span id="percent-i"></span>
 
-Prefer `%i` to the literal array syntax when you need an array of symbols (and you don't need to maintain Ruby 1.9 compatibility).
-Apply this rule only to arrays with two or more elements.
+Prefer `%i` to the literal array syntax when you need an array of symbols (and you don’t need to maintain Ruby 1.9 compatibility). Apply this rule only to arrays with two or more elements.
 
-[source,ruby]
-----
-# bad
-STATES = [:draft, :open, :closed]
+    # bad
+    STATES = [:draft, :open, :closed]
 
-# good
-STATES = %i[draft open closed]
-----
+    # good
+    STATES = %i[draft open closed]
 
-=== No Trailing Array Commas [[no-trailing-array-commas]]
+## No Trailing Array Commas <span id="no-trailing-array-commas"></span>
 
 Avoid comma after the last item of an `Array` or `Hash` literal, especially when the items are not on separate lines.
 
-[source,ruby]
-----
-# bad - easier to move/add/remove items, but still not preferred
-VALUES = [
-           1001,
-           2020,
-           3333,
-         ]
+    # bad - easier to move/add/remove items, but still not preferred
+    VALUES = [
+               1001,
+               2020,
+               3333,
+             ]
 
-# bad
-VALUES = [1001, 2020, 3333, ]
+    # bad
+    VALUES = [1001, 2020, 3333, ]
 
-# good
-VALUES = [1001, 2020, 3333]
-----
+    # good
+    VALUES = [1001, 2020, 3333]
 
-=== No Gappy Arrays [[no-gappy-arrays]]
+## No Gappy Arrays <span id="no-gappy-arrays"></span>
 
 Avoid the creation of huge gaps in arrays.
 
-[source,ruby]
-----
-arr = []
-arr[100] = 1 # now you have an array with lots of nils
-----
+    arr = []
+    arr[100] = 1 # now you have an array with lots of nils
 
-=== `first` and `last` [[first-and-last]]
+## `first` and `last` <span id="first-and-last"></span>
 
 When accessing the first or last element from an array, prefer `first` or `last` over `[0]` or `[-1]`.
 
-=== Set vs Array [[set-vs-array]]
+## Set vs Array <span id="set-vs-array"></span>
 
-Use `Set` instead of `Array` when dealing with unique elements.
-`Set` implements a collection of unordered values with no duplicates.
-This is a hybrid of ``Array``'s intuitive inter-operation facilities and ``Hash``'s fast lookup.
+Use `Set` instead of `Array` when dealing with unique elements. `Set` implements a collection of unordered values with no duplicates. This is a hybrid of \`\`Array\`\`'s intuitive inter-operation facilities and \`\`Hash\`\`'s fast lookup.
 
-=== Symbols as Keys [[symbols-as-keys]]
+## Symbols as Keys <span id="symbols-as-keys"></span>
 
 Prefer symbols instead of strings as hash keys.
 
-[source,ruby]
-----
-# bad
-hash = { 'one' => 1, 'two' => 2, 'three' => 3 }
+    # bad
+    hash = { 'one' => 1, 'two' => 2, 'three' => 3 }
 
-# good
-hash = { one: 1, two: 2, three: 3 }
-----
+    # good
+    hash = { one: 1, two: 2, three: 3 }
 
-=== No Mutable Keys [[no-mutable-keys]]
+## No Mutable Keys <span id="no-mutable-keys"></span>
 
 Avoid the use of mutable objects as hash keys.
 
-=== Hash Literals [[hash-literals]]
+## Hash Literals <span id="hash-literals"></span>
 
 Use the Ruby 1.9 hash literal syntax when your hash keys are symbols.
 
-[source,ruby]
-----
-# bad
-hash = { :one => 1, :two => 2, :three => 3 }
+    # bad
+    hash = { :one => 1, :two => 2, :three => 3 }
 
-# good
-hash = { one: 1, two: 2, three: 3 }
-----
+    # good
+    hash = { one: 1, two: 2, three: 3 }
 
-=== Hash Literal Values
+## Hash Literal Values
 
 Use the Ruby 3.1 hash literal value syntax when your hash key and value are the same.
 
-[source,ruby]
-----
-# bad
-hash = { one: one, two: two, three: three }
+    # bad
+    hash = { one: one, two: two, three: three }
 
-# good
-hash = { one:, two:, three: }
-----
+    # good
+    hash = { one:, two:, three: }
 
-=== Hash Literal as Last Array Item [[hash-literal-as-last-array-item]]
+## Hash Literal as Last Array Item <span id="hash-literal-as-last-array-item"></span>
 
 Wrap hash literal in braces if it is a last array item.
 
-[source,ruby]
-----
-# bad
-[1, 2, one: 1, two: 2]
+    # bad
+    [1, 2, one: 1, two: 2]
 
-# good
-[1, 2, { one: 1, two: 2 }]
-----
+    # good
+    [1, 2, { one: 1, two: 2 }]
 
-=== No Mixed Hash Syntaxes [[no-mixed-hash-syntaxes]]
+## No Mixed Hash Syntaxes <span id="no-mixed-hash-syntaxes"></span>
 
-Don't mix the Ruby 1.9 hash syntax with hash rockets in the same hash literal.
-When you've got keys that are not symbols stick to the hash rockets syntax.
+Don’t mix the Ruby 1.9 hash syntax with hash rockets in the same hash literal. When you’ve got keys that are not symbols stick to the hash rockets syntax.
 
-[source,ruby]
-----
-# bad
-{ a: 1, 'b' => 2 }
+    # bad
+    { a: 1, 'b' => 2 }
 
-# good
-{ :a => 1, 'b' => 2 }
-----
+    # good
+    { :a => 1, 'b' => 2 }
 
-=== Avoid Hash[] constructor [[avoid-hash-constructor]]
+## Avoid Hash\[\] constructor <span id="avoid-hash-constructor"></span>
 
-`Hash::[]` was a pre-Ruby 2.1 way of constructing hashes from arrays of key-value pairs,
-or from a flat list of keys and values. It has an obscure semantic and looks cryptic in code.
-Since Ruby 2.1, `Enumerable#to_h` can be used to construct a hash from a list of key-value pairs,
-and it should be preferred. Instead of `Hash[]` with a list of literal keys and values,
-just a hash literal should be preferred.
+`Hash::[]` was a pre-Ruby 2.1 way of constructing hashes from arrays of key-value pairs, or from a flat list of keys and values. It has an obscure semantic and looks cryptic in code. Since Ruby 2.1, `Enumerable#to_h` can be used to construct a hash from a list of key-value pairs, and it should be preferred. Instead of `Hash[]` with a list of literal keys and values, just a hash literal should be preferred.
 
-[source,ruby]
-----
-# bad
-Hash[ary]
-Hash[a, b, c, d]
+    # bad
+    Hash[ary]
+    Hash[a, b, c, d]
 
-# good
-ary.to_h
-{a => b, c => d}
-----
+    # good
+    ary.to_h
+    {a => b, c => d}
 
-=== `Hash#key?` [[hash-key]]
+## `Hash#key?` <span id="hash-key"></span>
 
 Use `Hash#key?` instead of `Hash#has_key?` and `Hash#value?` instead of `Hash#has_value?`.
 
-[source,ruby]
-----
-# bad
-hash.has_key?(:test)
-hash.has_value?(value)
+    # bad
+    hash.has_key?(:test)
+    hash.has_value?(value)
 
-# good
-hash.key?(:test)
-hash.value?(value)
-----
+    # good
+    hash.key?(:test)
+    hash.value?(value)
 
-=== `Hash#each` [[hash-each]]
+## `Hash#each` <span id="hash-each"></span>
 
 Use `Hash#each_key` instead of `Hash#keys.each` and `Hash#each_value` instead of `Hash#values.each`.
 
-[source,ruby]
-----
-# bad
-hash.keys.each { |k| p k }
-hash.values.each { |v| p v }
-hash.each { |k, _v| p k }
-hash.each { |_k, v| p v }
+    # bad
+    hash.keys.each { |k| p k }
+    hash.values.each { |v| p v }
+    hash.each { |k, _v| p k }
+    hash.each { |_k, v| p v }
 
-# good
-hash.each_key { |k| p k }
-hash.each_value { |v| p v }
-----
+    # good
+    hash.each_key { |k| p k }
+    hash.each_value { |v| p v }
 
-=== `Hash#fetch` [[hash-fetch]]
+## `Hash#fetch` <span id="hash-fetch"></span>
 
 Use `Hash#fetch` when dealing with hash keys that should be present.
 
-[source,ruby]
-----
-heroes = { batman: 'Bruce Wayne', superman: 'Clark Kent' }
-# bad - if we make a mistake we might not spot it right away
-heroes[:batman] # => 'Bruce Wayne'
-heroes[:supermann] # => nil
+    heroes = { batman: 'Bruce Wayne', superman: 'Clark Kent' }
+    # bad - if we make a mistake we might not spot it right away
+    heroes[:batman] # => 'Bruce Wayne'
+    heroes[:supermann] # => nil
 
-# good - fetch raises a KeyError making the problem obvious
-heroes.fetch(:supermann)
-----
+    # good - fetch raises a KeyError making the problem obvious
+    heroes.fetch(:supermann)
 
-=== `Hash#fetch` defaults [[hash-fetch-defaults]]
+## `Hash#fetch` defaults <span id="hash-fetch-defaults"></span>
 
 Introduce default values for hash keys via `Hash#fetch` as opposed to using custom logic.
 
-[source,ruby]
-----
-batman = { name: 'Bruce Wayne', is_evil: false }
+    batman = { name: 'Bruce Wayne', is_evil: false }
 
-# bad - if we just use || operator with falsy value we won't get the expected result
-batman[:is_evil] || true # => true
+    # bad - if we just use || operator with falsy value we won't get the expected result
+    batman[:is_evil] || true # => true
 
-# good - fetch works correctly with falsy values
-batman.fetch(:is_evil, true) # => false
-----
+    # good - fetch works correctly with falsy values
+    batman.fetch(:is_evil, true) # => false
 
-=== Use Hash Blocks [[use-hash-blocks]]
+## Use Hash Blocks <span id="use-hash-blocks"></span>
 
 Prefer the use of the block instead of the default value in `Hash#fetch` if the code that has to be evaluated may have side effects or be expensive.
 
-[source,ruby]
-----
-batman = { name: 'Bruce Wayne' }
+    batman = { name: 'Bruce Wayne' }
 
-# bad - if we use the default value, we eager evaluate it
-# so it can slow the program down if done multiple times
-batman.fetch(:powers, obtain_batman_powers) # obtain_batman_powers is an expensive call
+    # bad - if we use the default value, we eager evaluate it
+    # so it can slow the program down if done multiple times
+    batman.fetch(:powers, obtain_batman_powers) # obtain_batman_powers is an expensive call
 
-# good - blocks are lazy evaluated, so only triggered in case of KeyError exception
-batman.fetch(:powers) { obtain_batman_powers }
-----
+    # good - blocks are lazy evaluated, so only triggered in case of KeyError exception
+    batman.fetch(:powers) { obtain_batman_powers }
 
-=== `Hash#values_at` [[hash-values-at]]
+## `Hash#values_at` <span id="hash-values-at"></span>
 
 Use `Hash#values_at` when you need to retrieve several values consecutively from a hash.
 
-[source,ruby]
-----
-# bad
-email = data['email']
-username = data['nickname']
+    # bad
+    email = data['email']
+    username = data['nickname']
 
-# good
-email, username = data.values_at('email', 'nickname')
-----
+    # good
+    email, username = data.values_at('email', 'nickname')
 
-=== `Hash#transform_keys` and `Hash#transform_values` [[hash-transform-methods]]
+## `Hash#transform_keys` and `Hash#transform_values` <span id="hash-transform-methods"></span>
 
 Prefer `transform_keys` or `transform_values` over `each_with_object` or `map` when transforming just the keys or just the values of a hash.
 
-[source,ruby]
-----
-# bad
-{a: 1, b: 2}.each_with_object({}) { |(k, v), h| h[k] = v * v }
-{a: 1, b: 2}.map { |k, v| [k.to_s, v] }.to_h
+    # bad
+    {a: 1, b: 2}.each_with_object({}) { |(k, v), h| h[k] = v * v }
+    {a: 1, b: 2}.map { |k, v| [k.to_s, v] }.to_h
 
-# good
-{a: 1, b: 2}.transform_values { |v| v * v }
-{a: 1, b: 2}.transform_keys { |k| k.to_s }
-----
+    # good
+    {a: 1, b: 2}.transform_values { |v| v * v }
+    {a: 1, b: 2}.transform_keys { |k| k.to_s }
 
-=== Ordered Hashes [[ordered-hashes]]
+## Ordered Hashes <span id="ordered-hashes"></span>
 
 Rely on the fact that as of Ruby 1.9 hashes are ordered.
 
-=== No Modifying Collections [[no-modifying-collections]]
+## No Modifying Collections <span id="no-modifying-collections"></span>
 
 Do not modify a collection while traversing it.
 
-=== Accessing Elements Directly [[accessing-elements-directly]]
+## Accessing Elements Directly <span id="accessing-elements-directly"></span>
 
-When accessing elements of a collection, avoid direct access via `[n]` by using an alternate form of the reader method if it is supplied.
-This guards you from calling `[]` on `nil`.
+When accessing elements of a collection, avoid direct access via `[n]` by using an alternate form of the reader method if it is supplied. This guards you from calling `[]` on `nil`.
 
-[source,ruby]
-----
-# bad
-Regexp.last_match[1]
+    # bad
+    Regexp.last_match[1]
 
-# good
-Regexp.last_match(1)
-----
+    # good
+    Regexp.last_match(1)
 
-=== Provide Alternate Accessor to Collections [[provide-alternate-accessor-to-collections]]
+## Provide Alternate Accessor to Collections <span id="provide-alternate-accessor-to-collections"></span>
 
 When providing an accessor for a collection, provide an alternate form to save users from checking for `nil` before accessing an element in the collection.
 
-[source,ruby]
-----
-# bad
-def awesome_things
-  @awesome_things
-end
+    # bad
+    def awesome_things
+      @awesome_things
+    end
 
-# good
-def awesome_things(index = nil)
-  if index && @awesome_things
-    @awesome_things[index]
-  else
-    @awesome_things
-  end
-end
-----
+    # good
+    def awesome_things(index = nil)
+      if index && @awesome_things
+        @awesome_things[index]
+      else
+        @awesome_things
+      end
+    end
 
-=== `map`/`find`/`select`/`reduce`/`include?`/`size` [[map-find-select-reduce-include-size]]
+## `map`/`find`/`select`/`reduce`/`include?`/`size` <span id="map-find-select-reduce-include-size"></span>
 
-Prefer `map` over `collect`, `find` over `detect`, `select` over `find_all`, `reduce` over `inject`, `include?` over `member?` and `size` over `length`.
-This is not a hard requirement; if the use of the alias enhances readability, it's ok to use it.
-The rhyming methods are inherited from Smalltalk and are not common in other programming languages.
-The reason the use of `select` is encouraged over `find_all` is that it goes together nicely with `reject` and its name is pretty self-explanatory.
+Prefer `map` over `collect`, `find` over `detect`, `select` over `find_all`, `reduce` over `inject`, `include?` over `member?` and `size` over `length`. This is not a hard requirement; if the use of the alias enhances readability, it’s ok to use it. The rhyming methods are inherited from Smalltalk and are not common in other programming languages. The reason the use of `select` is encouraged over `find_all` is that it goes together nicely with `reject` and its name is pretty self-explanatory.
 
-=== `count` vs `size` [[count-vs-size]]
+## `count` vs `size` <span id="count-vs-size"></span>
 
-Don't use `count` as a substitute for `size`.
-For `Enumerable` objects other than `Array` it will iterate the entire collection in order to determine its size.
+Don’t use `count` as a substitute for `size`. For `Enumerable` objects other than `Array` it will iterate the entire collection in order to determine its size.
 
-[source,ruby]
-----
-# bad
-some_hash.count
+    # bad
+    some_hash.count
 
-# good
-some_hash.size
-----
+    # good
+    some_hash.size
 
-=== `flat_map` [[flat-map]]
+## `flat_map` <span id="flat-map"></span>
 
-Use `flat_map` instead of `map` + `flatten`.
-This does not apply for arrays with a depth greater than 2, i.e. if `users.first.songs == ['a', ['b','c']]`, then use `map + flatten` rather than `flat_map`.
-`flat_map` flattens the array by 1, whereas `flatten` flattens it all the way.
+Use `flat_map` instead of `map` + `flatten`. This does not apply for arrays with a depth greater than 2, i.e. if `users.first.songs == ['a', ['b','c']]`, then use `map + flatten` rather than `flat_map`. `flat_map` flattens the array by 1, whereas `flatten` flattens it all the way.
 
-[source,ruby]
-----
-# bad
-all_songs = users.map(&:songs).flatten.uniq
+    # bad
+    all_songs = users.map(&:songs).flatten.uniq
 
-# good
-all_songs = users.flat_map(&:songs).uniq
-----
+    # good
+    all_songs = users.flat_map(&:songs).uniq
 
-=== `reverse_each` [[reverse-each]]
+## `reverse_each` <span id="reverse-each"></span>
 
-Prefer `reverse_each` to `reverse.each` because some classes that `include Enumerable` will provide an efficient implementation.
-Even in the worst case where a class does not provide a specialized implementation, the general implementation inherited from `Enumerable` will be at least as efficient as using `reverse.each`.
+Prefer `reverse_each` to `reverse.each` because some classes that `include Enumerable` will provide an efficient implementation. Even in the worst case where a class does not provide a specialized implementation, the general implementation inherited from `Enumerable` will be at least as efficient as using `reverse.each`.
 
-[source,ruby]
-----
-# bad
-array.reverse.each { ... }
+    # bad
+    array.reverse.each { ... }
 
-# good
-array.reverse_each { ... }
-----
+    # good
+    array.reverse_each { ... }
 
-== Numbers
+# Numbers
 
-=== Underscores in Numerics [[underscores-in-numerics]]
+## Underscores in Numerics <span id="underscores-in-numerics"></span>
 
 Add underscores to large numeric literals to improve their readability.
 
-[source,ruby]
-----
-# bad - how many 0s are there?
-num = 1000000
+    # bad - how many 0s are there?
+    num = 1000000
 
-# good - much easier to parse for the human brain
-num = 1_000_000
-----
+    # good - much easier to parse for the human brain
+    num = 1_000_000
 
-=== Numeric Literal Prefixes [[numeric-literal-prefixes]]
+## Numeric Literal Prefixes <span id="numeric-literal-prefixes"></span>
 
-Prefer lowercase letters for numeric literal prefixes.
-`0o` for octal, `0x` for hexadecimal and `0b` for binary.
-Do not use `0d` prefix for decimal literals.
+Prefer lowercase letters for numeric literal prefixes. `0o` for octal, `0x` for hexadecimal and `0b` for binary. Do not use `0d` prefix for decimal literals.
 
-[source,ruby]
-----
-# bad
-num = 01234
-num = 0O1234
-num = 0X12AB
-num = 0B10101
-num = 0D1234
-num = 0d1234
+    # bad
+    num = 01234
+    num = 0O1234
+    num = 0X12AB
+    num = 0B10101
+    num = 0D1234
+    num = 0d1234
 
-# good - easier to separate digits from the prefix
-num = 0o1234
-num = 0x12AB
-num = 0b10101
-num = 1234
-----
+    # good - easier to separate digits from the prefix
+    num = 0o1234
+    num = 0x12AB
+    num = 0b10101
+    num = 1234
 
-=== Integer Type Checking [[integer-type-checking]]
+## Integer Type Checking <span id="integer-type-checking"></span>
 
-Use `Integer` to check the type of an integer number.
-Since `Fixnum` is platform-dependent, checking against it will return different results on 32-bit and 64-bit machines.
+Use `Integer` to check the type of an integer number. Since `Fixnum` is platform-dependent, checking against it will return different results on 32-bit and 64-bit machines.
 
-[source,ruby]
-----
-timestamp = Time.now.to_i
+    timestamp = Time.now.to_i
 
-# bad
-timestamp.is_a?(Fixnum)
-timestamp.is_a?(Bignum)
+    # bad
+    timestamp.is_a?(Fixnum)
+    timestamp.is_a?(Bignum)
 
-# good
-timestamp.is_a?(Integer)
-----
+    # good
+    timestamp.is_a?(Integer)
 
-=== Random Numbers [[random-numbers]]
+## Random Numbers <span id="random-numbers"></span>
 
-Prefer to use ranges when generating random numbers instead of integers with offsets, since it clearly states your intentions.
-Imagine simulating a roll of a dice:
+Prefer to use ranges when generating random numbers instead of integers with offsets, since it clearly states your intentions. Imagine simulating a roll of a dice:
 
-[source,ruby]
-----
-# bad
-rand(6) + 1
+    # bad
+    rand(6) + 1
 
-# good
-rand(1..6)
-----
+    # good
+    rand(1..6)
 
-=== Float Division [[float-division]]
+## Float Division <span id="float-division"></span>
 
 When performing float-division on two integers, either use `fdiv` or convert one-side integer to float.
 
-[source,ruby]
-----
-# bad
-a.to_f / b.to_f
+    # bad
+    a.to_f / b.to_f
 
-# good
-a.to_f / b
-a / b.to_f
-a.fdiv(b)
-----
+    # good
+    a.to_f / b
+    a / b.to_f
+    a.fdiv(b)
 
-=== Float Comparison [[float-comparison]]
+## Float Comparison <span id="float-comparison"></span>
 
 Avoid (in)equality comparisons of floats as they are unreliable.
 
 Floating point values are inherently inaccurate, and comparing them for exact equality is almost never the desired semantics. Comparison via the `==/!=` operators checks floating-point value representation to be exactly the same, which is very unlikely if you perform any arithmetic operations involving precision loss.
 
-[source,ruby]
-----
-# bad
-x == 0.1
-x != 0.1
+    # bad
+    x == 0.1
+    x != 0.1
 
-# good - using BigDecimal
-x.to_d == 0.1.to_d
+    # good - using BigDecimal
+    x.to_d == 0.1.to_d
 
-# good - not an actual float comparison
-x == Float::INFINITY
+    # good - not an actual float comparison
+    x == Float::INFINITY
 
-# good
-(x - 0.1).abs < Float::EPSILON
+    # good
+    (x - 0.1).abs < Float::EPSILON
 
-# good
-tolerance = 0.0001
-(x - 0.1).abs < tolerance
+    # good
+    tolerance = 0.0001
+    (x - 0.1).abs < tolerance
 
-# Or some other epsilon based type of comparison:
-# https://www.embeddeduse.com/2019/08/26/qt-compare-two-floats/
-----
+    # Or some other epsilon based type of comparison:
+    # https://www.embeddeduse.com/2019/08/26/qt-compare-two-floats/
 
-=== Exponential Notation [[exponential-notation]]
+## Exponential Notation <span id="exponential-notation"></span>
 
 When using exponential notation for numbers, prefer using the normalized scientific notation, which uses a mantissa between 1 (inclusive) and 10 (exclusive). Omit the exponent altogether if it is zero.
 
-The goal is to avoid confusion between powers of ten and exponential notation, as one quickly reading `10e7` could think it's 10 to the power of 7 (one then 7 zeroes) when it's actually 10 to the power of 8 (one then 8 zeroes). If you want 10 to the power of 7, you should do `1e7`.
+The goal is to avoid confusion between powers of ten and exponential notation, as one quickly reading `10e7` could think it’s 10 to the power of 7 (one then 7 zeroes) when it’s actually 10 to the power of 8 (one then 8 zeroes). If you want 10 to the power of 7, you should do `1e7`.
 
-|===
-| power notation | exponential notation | output
+<table><colgroup><col style="width: 33%" /><col style="width: 33%" /><col style="width: 33%" /></colgroup><tbody><tr class="odd"><td style="text-align: left;"><p>power notation</p></td><td style="text-align: left;"><p>exponential notation</p></td><td style="text-align: left;"><p>output</p></td></tr><tr class="even"><td style="text-align: left;"><p>10 ** 7</p></td><td style="text-align: left;"><p>1e7</p></td><td style="text-align: left;"><p>10000000</p></td></tr><tr class="odd"><td style="text-align: left;"><p>10 ** 6</p></td><td style="text-align: left;"><p>1e6</p></td><td style="text-align: left;"><p>1000000</p></td></tr><tr class="even"><td style="text-align: left;"><p>10 ** 7</p></td><td style="text-align: left;"><p>10e6</p></td><td style="text-align: left;"><p>10000000</p></td></tr></tbody></table>
 
-| 10 ** 7        | 1e7                  | 10000000
-| 10 ** 6        | 1e6                  | 1000000
-| 10 ** 7        | 10e6                 | 10000000
-|===
+One could favor the alternative engineering notation, in which the exponent must always be a multiple of 3 for easy conversion to the thousand / million / … system.
 
-One could favor the alternative engineering notation, in which the exponent must always be a multiple of 3 for easy conversion to the thousand / million / ... system.
+    # bad
+    10e6
+    0.3e4
+    11.7e5
+    3.14e0
 
-[source,ruby]
-----
-# bad
-10e6
-0.3e4
-11.7e5
-3.14e0
-
-# good
-1e7
-3e3
-1.17e6
-3.14
-----
+    # good
+    1e7
+    3e3
+    1.17e6
+    3.14
 
 Alternative : engineering notation:
 
-[source,ruby]
-----
-# bad
-3.2e7
-0.1e5
-12e4
+    # bad
+    3.2e7
+    0.1e5
+    12e4
 
-# good
-1e6
-17e6
-0.98e9
-----
+    # good
+    1e6
+    17e6
+    0.98e9
 
-== Strings
+# Strings
 
-=== String Interpolation [[string-interpolation]]
+## String Interpolation <span id="string-interpolation"></span>
 
 Prefer string interpolation and string formatting to string concatenation:
 
-[source,ruby]
-----
-# bad
-email_with_name = user.name + ' <' + user.email + '>'
+    # bad
+    email_with_name = user.name + ' <' + user.email + '>'
 
-# good
-email_with_name = "#{user.name} <#{user.email}>"
+    # good
+    email_with_name = "#{user.name} <#{user.email}>"
 
-# good
-email_with_name = format('%s <%s>', user.name, user.email)
-----
+    # good
+    email_with_name = format('%s <%s>', user.name, user.email)
 
-=== Consistent String Literals [[consistent-string-literals]]
+## Consistent String Literals <span id="consistent-string-literals"></span>
 
-Adopt a consistent string literal quoting style.
-There are two popular styles in the Ruby community, both of which are considered good - single quotes by default and double quotes by default.
+Adopt a consistent string literal quoting style. There are two popular styles in the Ruby community, both of which are considered good - single quotes by default and double quotes by default.
 
-NOTE: The string literals in this guide are using single quotes by default.
+The string literals in this guide are using single quotes by default.
 
-==== Single Quote [[consistent-string-literals-single-quote]]
+### Single Quote <span id="consistent-string-literals-single-quote"></span>
 
-Prefer single-quoted strings when you don't need string interpolation or special symbols such as `\t`, `\n`, `'`, etc.
+Prefer single-quoted strings when you don’t need string interpolation or special symbols such as `\t`, `\n`, `'`, etc.
 
-[source,ruby]
-----
-# bad
-name = "Bozhidar"
+    # bad
+    name = "Bozhidar"
 
-name = 'De\'Andre'
+    name = 'De\'Andre'
 
-# good
-name = 'Bozhidar'
+    # good
+    name = 'Bozhidar'
 
-name = "De'Andre"
-----
+    name = "De'Andre"
 
-==== Double Quote [[consistent-string-literals-double-quote]]
+### Double Quote <span id="consistent-string-literals-double-quote"></span>
 
 Prefer double-quotes unless your string literal contains " or escape characters you want to suppress.
 
-[source,ruby]
-----
-# bad
-name = 'Bozhidar'
+    # bad
+    name = 'Bozhidar'
 
-sarcasm = "I \"like\" it."
+    sarcasm = "I \"like\" it."
 
-# good
-name = "Bozhidar"
+    # good
+    name = "Bozhidar"
 
-sarcasm = 'I "like" it.'
-----
+    sarcasm = 'I "like" it.'
 
-=== No Character Literals [[no-character-literals]]
+## No Character Literals <span id="no-character-literals"></span>
 
-Don't use the character literal syntax `?x`.
-Since Ruby 1.9 it's basically redundant - `?x` would be interpreted as `'x'` (a string with a single character in it).
+Don’t use the character literal syntax `?x`. Since Ruby 1.9 it’s basically redundant - `?x` would be interpreted as `'x'` (a string with a single character in it).
 
-[source,ruby]
-----
-# bad
-char = ?c
+    # bad
+    char = ?c
 
-# good
-char = 'c'
-----
+    # good
+    char = 'c'
 
-=== Curlies Interpolate [[curlies-interpolate]]
+## Curlies Interpolate <span id="curlies-interpolate"></span>
 
-Don't leave out `{}` around instance and global variables being interpolated into a string.
+Don’t leave out `{}` around instance and global variables being interpolated into a string.
 
-[source,ruby]
-----
-class Person
-  attr_reader :first_name, :last_name
+    class Person
+      attr_reader :first_name, :last_name
 
-  def initialize(first_name, last_name)
-    @first_name = first_name
-    @last_name = last_name
-  end
+      def initialize(first_name, last_name)
+        @first_name = first_name
+        @last_name = last_name
+      end
 
-  # bad - valid, but awkward
-  def to_s
-    "#@first_name #@last_name"
-  end
+      # bad - valid, but awkward
+      def to_s
+        "#@first_name #@last_name"
+      end
 
-  # good
-  def to_s
-    "#{@first_name} #{@last_name}"
-  end
-end
+      # good
+      def to_s
+        "#{@first_name} #{@last_name}"
+      end
+    end
 
-$global = 0
-# bad
-puts "$global = #$global"
+    $global = 0
+    # bad
+    puts "$global = #$global"
 
-# good
-puts "$global = #{$global}"
-----
+    # good
+    puts "$global = #{$global}"
 
-=== No `to_s` [[no-to-s]]
+## No `to_s` <span id="no-to-s"></span>
 
-Don't use `Object#to_s` on interpolated objects.
-It's called on them automatically.
+Don’t use `Object#to_s` on interpolated objects. It’s called on them automatically.
 
-[source,ruby]
-----
-# bad
-message = "This is the #{result.to_s}."
+    # bad
+    message = "This is the #{result.to_s}."
 
-# good
-message = "This is the #{result}."
-----
+    # good
+    message = "This is the #{result}."
 
-=== String Concatenation [[concat-strings]]
+## String Concatenation <span id="concat-strings"></span>
 
-Avoid using `String#+` when you need to construct large data chunks.
-Instead, use `String#<<`.
-Concatenation mutates the string instance in-place and is always faster than `String#+`, which creates a bunch of new string objects.
+Avoid using `String#+` when you need to construct large data chunks. Instead, use `String#<<`. Concatenation mutates the string instance in-place and is always faster than `String#+`, which creates a bunch of new string objects.
 
-[source,ruby]
-----
-# bad
-html = ''
-html += '<h1>Page title</h1>'
+    # bad
+    html = ''
+    html += '<h1>Page title</h1>'
 
-paragraphs.each do |paragraph|
-  html += "<p>#{paragraph}</p>"
-end
+    paragraphs.each do |paragraph|
+      html += "<p>#{paragraph}</p>"
+    end
 
-# good and also fast
-html = ''
-html << '<h1>Page title</h1>'
+    # good and also fast
+    html = ''
+    html << '<h1>Page title</h1>'
 
-paragraphs.each do |paragraph|
-  html << "<p>#{paragraph}</p>"
-end
-----
+    paragraphs.each do |paragraph|
+      html << "<p>#{paragraph}</p>"
+    end
 
-=== Don't Abuse `gsub` [[dont-abuse-gsub]]
+## Don’t Abuse `gsub` <span id="dont-abuse-gsub"></span>
 
-Don't use `String#gsub` in scenarios in which you can use a faster and more specialized alternative.
+Don’t use `String#gsub` in scenarios in which you can use a faster and more specialized alternative.
 
-[source,ruby]
-----
-url = 'http://example.com'
-str = 'lisp-case-rules'
+    url = 'http://example.com'
+    str = 'lisp-case-rules'
 
-# bad
-url.gsub('http://', 'https://')
-str.gsub('-', '_')
+    # bad
+    url.gsub('http://', 'https://')
+    str.gsub('-', '_')
 
-# good
-url.sub('http://', 'https://')
-str.tr('-', '_')
-----
+    # good
+    url.sub('http://', 'https://')
+    str.tr('-', '_')
 
-=== `String#chars` [[string-chars]]
+## `String#chars` <span id="string-chars"></span>
 
 Prefer the use of `String#chars` over `String#split` with empty string or regexp literal argument.
 
-NOTE: These cases have the same behavior since Ruby 2.0.
+These cases have the same behavior since Ruby 2.0.
 
-[source,ruby]
-----
-# bad
-string.split(//)
-string.split('')
+    # bad
+    string.split(//)
+    string.split('')
 
-# good
-string.chars
-----
+    # good
+    string.chars
 
-=== `sprintf` [[sprintf]]
+## `sprintf` <span id="sprintf"></span>
 
 Prefer the use of `sprintf` and its alias `format` over the fairly cryptic `String#%` method.
 
-[source,ruby]
-----
-# bad
-'%d %d' % [20, 10]
-# => '20 10'
+    # bad
+    '%d %d' % [20, 10]
+    # => '20 10'
 
-# good
-sprintf('%d %d', 20, 10)
-# => '20 10'
+    # good
+    sprintf('%d %d', 20, 10)
+    # => '20 10'
 
-# good
-sprintf('%<first>d %<second>d', first: 20, second: 10)
-# => '20 10'
+    # good
+    sprintf('%<first>d %<second>d', first: 20, second: 10)
+    # => '20 10'
 
-format('%d %d', 20, 10)
-# => '20 10'
+    format('%d %d', 20, 10)
+    # => '20 10'
 
-# good
-format('%<first>d %<second>d', first: 20, second: 10)
-# => '20 10'
-----
+    # good
+    format('%<first>d %<second>d', first: 20, second: 10)
+    # => '20 10'
 
-=== Named Format Tokens [[named-format-tokens]]
+## Named Format Tokens <span id="named-format-tokens"></span>
 
 When using named format string tokens, favor `%<name>s` over `%{name}` because it encodes information about the type of the value.
 
-[source,ruby]
-----
-# bad
-format('Hello, %{name}', name: 'John')
+    # bad
+    format('Hello, %{name}', name: 'John')
 
-# good
-format('Hello, %<name>s', name: 'John')
-----
+    # good
+    format('Hello, %<name>s', name: 'John')
 
-=== Long Strings [[heredoc-long-strings]]
+## Long Strings <span id="heredoc-long-strings"></span>
 
-Break long strings into multiple lines but don't concatenate them with `+`.
-If you want to add newlines, use heredoc. Otherwise use `\`:
+Break long strings into multiple lines but don’t concatenate them with `+`. If you want to add newlines, use heredoc. Otherwise use `\`:
 
-[source,ruby]
-----
-# bad
-"Lorem Ipsum is simply dummy text of the printing and typesetting industry. " +
-"Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
-"when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+    # bad
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. " +
+    "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, " +
+    "when an unknown printer took a galley of type and scrambled it to make a type specimen book."
 
-# good
-<<~LOREM
-  Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-  when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-LOREM
+    # good
+    <<~LOREM
+      Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+      when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+    LOREM
 
-# good
-"Lorem Ipsum is simply dummy text of the printing and typesetting industry. "\
-"Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, "\
-"when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-----
+    # good
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. "\
+    "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, "\
+    "when an unknown printer took a galley of type and scrambled it to make a type specimen book."
 
-== Heredocs
+# Heredocs
 
-=== Squiggly Heredocs [[squiggly-heredocs]]
+## Squiggly Heredocs <span id="squiggly-heredocs"></span>
 
-Use Ruby 2.3's squiggly heredocs for nicely indented multi-line strings.
+Use Ruby 2.3’s squiggly heredocs for nicely indented multi-line strings.
 
-[source,ruby]
-----
-# bad - using Powerpack String#strip_margin
-code = <<-RUBY.strip_margin('|')
-  |def test
-  |  some_method
-  |  other_method
-  |end
-RUBY
+    # bad - using Powerpack String#strip_margin
+    code = <<-RUBY.strip_margin('|')
+      |def test
+      |  some_method
+      |  other_method
+      |end
+    RUBY
 
-# also bad
-code = <<-RUBY
-def test
-  some_method
-  other_method
-end
-RUBY
+    # also bad
+    code = <<-RUBY
+    def test
+      some_method
+      other_method
+    end
+    RUBY
 
-# good
-code = <<~RUBY
-  def test
-    some_method
-    other_method
-  end
-RUBY
-----
+    # good
+    code = <<~RUBY
+      def test
+        some_method
+        other_method
+      end
+    RUBY
 
-=== Heredoc Delimiters [[heredoc-delimiters]]
+## Heredoc Delimiters <span id="heredoc-delimiters"></span>
 
-Use descriptive delimiters for heredocs.
-Delimiters add valuable information about the heredoc content, and as an added bonus some editors can highlight code within heredocs if the correct delimiter is used.
+Use descriptive delimiters for heredocs. Delimiters add valuable information about the heredoc content, and as an added bonus some editors can highlight code within heredocs if the correct delimiter is used.
 
-[source,ruby]
-----
-# bad
-code = <<~END
-  def foo
-    bar
-  end
-END
+    # bad
+    code = <<~END
+      def foo
+        bar
+      end
+    END
 
-# good
-code = <<~RUBY
-  def foo
-    bar
-  end
-RUBY
+    # good
+    code = <<~RUBY
+      def foo
+        bar
+      end
+    RUBY
 
-# good
-code = <<~SUMMARY
-  An imposing black structure provides a connection between the past and
-  the future in this enigmatic adaptation of a short story by revered
-  sci-fi author Arthur C. Clarke.
-SUMMARY
-----
+    # good
+    code = <<~SUMMARY
+      An imposing black structure provides a connection between the past and
+      the future in this enigmatic adaptation of a short story by revered
+      sci-fi author Arthur C. Clarke.
+    SUMMARY
 
-=== Heredoc Method Calls [[heredoc-method-calls]]
+## Heredoc Method Calls <span id="heredoc-method-calls"></span>
 
-Place method calls with heredoc receivers on the first line of the heredoc definition.
-The bad form has significant potential for error if a new line is added or removed.
+Place method calls with heredoc receivers on the first line of the heredoc definition. The bad form has significant potential for error if a new line is added or removed.
 
-[source,ruby]
-----
-# bad
-query = <<~SQL
-  select foo from bar
-SQL
-.strip_indent
+    # bad
+    query = <<~SQL
+      select foo from bar
+    SQL
+    .strip_indent
 
-# good
-query = <<~SQL.strip_indent
-  select foo from bar
-SQL
-----
+    # good
+    query = <<~SQL.strip_indent
+      select foo from bar
+    SQL
 
-=== Heredoc Argument Closing Parentheses [[heredoc-argument-closing-parentheses]]
+## Heredoc Argument Closing Parentheses <span id="heredoc-argument-closing-parentheses"></span>
 
-Place the closing parenthesis for method calls with heredoc arguments on the first line of the heredoc definition.
-The bad form has potential for error if the new line before the closing parenthesis is removed.
+Place the closing parenthesis for method calls with heredoc arguments on the first line of the heredoc definition. The bad form has potential for error if the new line before the closing parenthesis is removed.
 
-[source,ruby]
-----
-# bad
-foo(<<~SQL
-  select foo from bar
-SQL
-)
+    # bad
+    foo(<<~SQL
+      select foo from bar
+    SQL
+    )
 
-# good
-foo(<<~SQL)
-  select foo from bar
-SQL
-----
+    # good
+    foo(<<~SQL)
+      select foo from bar
+    SQL
 
-== Date & Time
+# Date & Time
 
-=== `Time.now` [[time-now]]
+## `Time.now` <span id="time-now"></span>
 
 Prefer `Time.now` over `Time.new` when retrieving the current system time.
 
-=== No `DateTime` [[no-datetime]]
+## No `DateTime` <span id="no-datetime"></span>
 
-Don't use `DateTime` unless you need to account for historical calendar reform - and if you do, explicitly specify the `start` argument to clearly state your intentions.
+Don’t use `DateTime` unless you need to account for historical calendar reform - and if you do, explicitly specify the `start` argument to clearly state your intentions.
 
-[source,ruby]
-----
-# bad - uses DateTime for current time
-DateTime.now
+    # bad - uses DateTime for current time
+    DateTime.now
 
-# good - uses Time for current time
-Time.now
+    # good - uses Time for current time
+    Time.now
 
-# bad - uses DateTime for modern date
-DateTime.iso8601('2016-06-29')
+    # bad - uses DateTime for modern date
+    DateTime.iso8601('2016-06-29')
 
-# good - uses Date for modern date
-Date.iso8601('2016-06-29')
+    # good - uses Date for modern date
+    Date.iso8601('2016-06-29')
 
-# good - uses DateTime with start argument for historical date
-DateTime.iso8601('1751-04-23', Date::ENGLAND)
-----
+    # good - uses DateTime with start argument for historical date
+    DateTime.iso8601('1751-04-23', Date::ENGLAND)
 
-== Regular Expressions
+# Regular Expressions
 
-[quote, Jamie Zawinski]
-____
-Some people, when confronted with a problem, think
-"I know, I'll use regular expressions." Now they have two problems.
-____
+> Some people, when confronted with a problem, think "I know, I’ll use regular expressions." Now they have two problems.
+>
+> —  Jamie Zawinski
 
-=== Plain Text Search [[no-regexp-for-plaintext]]
+## Plain Text Search <span id="no-regexp-for-plaintext"></span>
 
-Don't use regular expressions if you just need plain text search in string.
+Don’t use regular expressions if you just need plain text search in string.
 
-[source,ruby]
-----
-foo = 'I am an example string'
+    foo = 'I am an example string'
 
-# bad - using a regular expression is an overkill here
-foo =~ /example/
+    # bad - using a regular expression is an overkill here
+    foo =~ /example/
 
-# good
-foo['example']
-----
+    # good
+    foo['example']
 
-=== Using Regular Expressions as String Indexes [[regexp-string-index]]
+## Using Regular Expressions as String Indexes <span id="regexp-string-index"></span>
 
 For simple constructions you can use regexp directly through string index.
 
-[source,ruby]
-----
-match = string[/regexp/]             # get content of matched regexp
-first_group = string[/text(grp)/, 1] # get content of captured group
-string[/text (grp)/, 1] = 'replace'  # string => 'text replace'
-----
+    match = string[/regexp/]             # get content of matched regexp
+    first_group = string[/text(grp)/, 1] # get content of captured group
+    string[/text (grp)/, 1] = 'replace'  # string => 'text replace'
 
-=== Prefer Non-capturing Groups [[non-capturing-regexp]]
+## Prefer Non-capturing Groups <span id="non-capturing-regexp"></span>
 
-Use non-capturing groups when you don't use the captured result.
+Use non-capturing groups when you don’t use the captured result.
 
-[source,ruby]
-----
-# bad
-/(first|second)/
+    # bad
+    /(first|second)/
 
-# good
-/(?:first|second)/
-----
+    # good
+    /(?:first|second)/
 
-=== Do not mix named and numbered captures [[do-not-mix-named-and-numbered-captures]]
+## Do not mix named and numbered captures <span id="do-not-mix-named-and-numbered-captures"></span>
 
-Do not mix named captures and numbered captures in a Regexp literal.
-Because numbered capture is ignored if they're mixed.
+Do not mix named captures and numbered captures in a Regexp literal. Because numbered capture is ignored if they’re mixed.
 
-[source,ruby]
-----
-# bad - There is no way to access `(BAR)` capturing.
-m = /(?<foo>FOO)(BAR)/.match('FOOBAR')
-p m[:foo] # => "FOO"
-p m[1]    # => "FOO"
-p m[2]    # => nil   - not "BAR"
+    # bad - There is no way to access `(BAR)` capturing.
+    m = /(?<foo>FOO)(BAR)/.match('FOOBAR')
+    p m[:foo] # => "FOO"
+    p m[1]    # => "FOO"
+    p m[2]    # => nil   - not "BAR"
 
-# good - Both captures are accessible with names.
-m = /(?<foo>FOO)(?<bar>BAR)/.match('FOOBAR')
-p m[:foo] # => "FOO"
-p m[:bar] # => "BAR"
+    # good - Both captures are accessible with names.
+    m = /(?<foo>FOO)(?<bar>BAR)/.match('FOOBAR')
+    p m[:foo] # => "FOO"
+    p m[:bar] # => "BAR"
 
-# good - `(?:BAR)` is non-capturing grouping.
-m = /(?<foo>FOO)(?:BAR)/.match('FOOBAR')
-p m[:foo] # => "FOO"
+    # good - `(?:BAR)` is non-capturing grouping.
+    m = /(?<foo>FOO)(?:BAR)/.match('FOOBAR')
+    p m[:foo] # => "FOO"
 
-# good - Both captures are accessible with numbers.
-m = /(FOO)(BAR)/.match('FOOBAR')
-p m[1] # => "FOO"
-p m[2] # => "BAR"
-----
+    # good - Both captures are accessible with numbers.
+    m = /(FOO)(BAR)/.match('FOOBAR')
+    p m[1] # => "FOO"
+    p m[2] # => "BAR"
 
-=== Refer named regexp captures by name [[refer-named-regexp-captures-by-name]]
+## Refer named regexp captures by name <span id="refer-named-regexp-captures-by-name"></span>
 
 Prefer using names to refer named regexp captures instead of numbers.
 
-[source,ruby]
-----
-# bad
-m = /(?<foo>FOO)(?<bar>BAR)/.match('FOOBAR')
-p m[1] # => "FOO"
-p m[2] # => "BAR"
+    # bad
+    m = /(?<foo>FOO)(?<bar>BAR)/.match('FOOBAR')
+    p m[1] # => "FOO"
+    p m[2] # => "BAR"
 
-# good
-m = /(?<foo>FOO)(?<bar>BAR)/.match('FOOBAR')
-p m[:foo] # => "FOO"
-p m[:bar] # => "BAR"
-----
+    # good
+    m = /(?<foo>FOO)(?<bar>BAR)/.match('FOOBAR')
+    p m[:foo] # => "FOO"
+    p m[:bar] # => "BAR"
 
-=== Avoid Perl-style Last Regular Expression Group Matchers [[no-perl-regexp-last-matchers]]
+## Avoid Perl-style Last Regular Expression Group Matchers <span id="no-perl-regexp-last-matchers"></span>
 
-Don't use the cryptic Perl-legacy variables denoting last regexp group matches (`$1`, `$2`, etc).
-Use `Regexp.last_match(n)` instead.
+Don’t use the cryptic Perl-legacy variables denoting last regexp group matches (`$1`, `$2`, etc). Use `Regexp.last_match(n)` instead.
 
-[source,ruby]
-----
-/(regexp)/ =~ string
-...
+    /(regexp)/ =~ string
+    ...
 
-# bad
-process $1
+    # bad
+    process $1
 
-# good
-process Regexp.last_match(1)
-----
+    # good
+    process Regexp.last_match(1)
 
-=== Avoid Numbered Groups [[no-numbered-regexes]]
+## Avoid Numbered Groups <span id="no-numbered-regexes"></span>
 
-Avoid using numbered groups as it can be hard to track what they contain.
-Named groups can be used instead.
+Avoid using numbered groups as it can be hard to track what they contain. Named groups can be used instead.
 
-[source,ruby]
-----
-# bad
-/(regexp)/ =~ string
-# some code
-process Regexp.last_match(1)
+    # bad
+    /(regexp)/ =~ string
+    # some code
+    process Regexp.last_match(1)
 
-# good
-/(?<meaningful_var>regexp)/ =~ string
-# some code
-process meaningful_var
-----
+    # good
+    /(?<meaningful_var>regexp)/ =~ string
+    # some code
+    process meaningful_var
 
-=== Limit Escapes [[limit-escapes]]
+## Limit Escapes <span id="limit-escapes"></span>
 
-Character classes have only a few special characters you should care about: `^`, `-`, `\`, `]`, so don't escape `.` or brackets in `[]`.
+Character classes have only a few special characters you should care about: `^`, `-`, `\`, `]`, so don’t escape `.` or brackets in `[]`.
 
-=== Caret and Dollar Regexp [[caret-and-dollar-regexp]]
+## Caret and Dollar Regexp <span id="caret-and-dollar-regexp"></span>
 
-Be careful with `^` and `$` as they match start/end of line, not string endings.
-If you want to match the whole string use: `\A` and `\z` (not to be confused with `\Z` which is the equivalent of `/\n?\z/`).
+Be careful with `^` and `$` as they match start/end of line, not string endings. If you want to match the whole string use: `\A` and `\z` (not to be confused with `\Z` which is the equivalent of `/\n?\z/`).
 
-[source,ruby]
-----
-string = "some injection\nusername"
-string[/^username$/]   # matches
-string[/\Ausername\z/] # doesn't match
-----
+    string = "some injection\nusername"
+    string[/^username$/]   # matches
+    string[/\Ausername\z/] # doesn't match
 
-=== Multi-line Regular Expressions [[multi-line-regexes]]
+## Multi-line Regular Expressions <span id="multi-line-regexes"></span>
 
 Use `x` (free-spacing) modifier for multi-line regexps.
 
-NOTE: That's known as https://www.regular-expressions.info/freespacing.html[free-spacing mode]. In this mode leading and trailing whitespace is ignored.
+That’s known as [free-spacing mode](https://www.regular-expressions.info/freespacing.html). In this mode leading and trailing whitespace is ignored.
 
-[source,ruby]
-----
-# bad
-regex = /start\
-\s\
-(group)\
-(?:alt1|alt2)\
-end/
+    # bad
+    regex = /start\
+    \s\
+    (group)\
+    (?:alt1|alt2)\
+    end/
 
-# good
-regexp = /
-  start
-  \s
-  (group)
-  (?:alt1|alt2)
-  end
-/x
-----
+    # good
+    regexp = /
+      start
+      \s
+      (group)
+      (?:alt1|alt2)
+      end
+    /x
 
-=== Comment Complex Regular Expressions [[comment-regexes]]
+## Comment Complex Regular Expressions <span id="comment-regexes"></span>
 
-Use `x` modifier for complex regexps.
-This makes them more readable and you can add some useful comments.
+Use `x` modifier for complex regexps. This makes them more readable and you can add some useful comments.
 
-[source,ruby]
-----
-regexp = /
-  start         # some text
-  \s            # white space char
-  (group)       # first group
-  (?:alt1|alt2) # some alternation
-  end
-/x
-----
+    regexp = /
+      start         # some text
+      \s            # white space char
+      (group)       # first group
+      (?:alt1|alt2) # some alternation
+      end
+    /x
 
-=== Use `gsub` with a Block or a Hash for Complex Replacements [[gsub-blocks]]
+## Use `gsub` with a Block or a Hash for Complex Replacements <span id="gsub-blocks"></span>
 
 For complex replacements `sub`/`gsub` can be used with a block or a hash.
 
-[source,ruby]
-----
-words = 'foo bar'
-words.sub(/f/, 'f' => 'F') # => 'Foo bar'
-words.gsub(/\w+/) { |word| word.capitalize } # => 'Foo Bar'
-----
+    words = 'foo bar'
+    words.sub(/f/, 'f' => 'F') # => 'Foo bar'
+    words.gsub(/\w+/) { |word| word.capitalize } # => 'Foo Bar'
 
-== Percent Literals
+# Percent Literals
 
-=== `%q` shorthand [[percent-q-shorthand]]
+## `%q` shorthand <span id="percent-q-shorthand"></span>
 
-Use `%()` (it's a shorthand for `%Q`) for single-line strings which require both interpolation and embedded double-quotes.
-For multi-line strings, prefer heredocs.
+Use `%()` (it’s a shorthand for `%Q`) for single-line strings which require both interpolation and embedded double-quotes. For multi-line strings, prefer heredocs.
 
-[source,ruby]
-----
-# bad (no interpolation needed)
-%(<div class="text">Some text</div>)
-# should be '<div class="text">Some text</div>'
+    # bad (no interpolation needed)
+    %(<div class="text">Some text</div>)
+    # should be '<div class="text">Some text</div>'
 
-# bad (no double-quotes)
-%(This is #{quality} style)
-# should be "This is #{quality} style"
+    # bad (no double-quotes)
+    %(This is #{quality} style)
+    # should be "This is #{quality} style"
 
-# bad (multiple lines)
-%(<div>\n<span class="big">#{exclamation}</span>\n</div>)
-# should be a heredoc.
+    # bad (multiple lines)
+    %(<div>\n<span class="big">#{exclamation}</span>\n</div>)
+    # should be a heredoc.
 
-# good (requires interpolation, has quotes, single line)
-%(<tr><td class="name">#{name}</td>)
-----
+    # good (requires interpolation, has quotes, single line)
+    %(<tr><td class="name">#{name}</td>)
 
-=== `%q` [[percent-q]]
+## `%q` <span id="percent-q"></span>
 
-Avoid `%()` or the equivalent `%q()` unless you have a string with both `'` and `"` in it.
-Regular string literals are more readable and should be preferred unless a lot of characters would have to be escaped in them.
+Avoid `%()` or the equivalent `%q()` unless you have a string with both `'` and `"` in it. Regular string literals are more readable and should be preferred unless a lot of characters would have to be escaped in them.
 
-[source,ruby]
-----
-# bad
-name = %q(Bruce Wayne)
-time = %q(8 o'clock)
-question = %q("What did you say?")
+    # bad
+    name = %q(Bruce Wayne)
+    time = %q(8 o'clock)
+    question = %q("What did you say?")
 
-# good
-name = 'Bruce Wayne'
-time = "8 o'clock"
-question = '"What did you say?"'
-quote = %q(<p class='quote'>"What did you say?"</p>)
-----
+    # good
+    name = 'Bruce Wayne'
+    time = "8 o'clock"
+    question = '"What did you say?"'
+    quote = %q(<p class='quote'>"What did you say?"</p>)
 
-=== `%r` [[percent-r]]
+## `%r` <span id="percent-r"></span>
 
-Use `%r` only for regular expressions matching _at least_ one `/` character.
+Use `%r` only for regular expressions matching *at least* one `/` character.
 
-[source,ruby]
-----
-# bad
-%r{\s+}
+    # bad
+    %r{\s+}
 
-# good
-%r{^/(.*)$}
-%r{^/blog/2011/(.*)$}
-----
+    # good
+    %r{^/(.*)$}
+    %r{^/blog/2011/(.*)$}
 
-=== `%x` [[percent-x]]
+## `%x` <span id="percent-x"></span>
 
-Avoid the use of `%x` unless you're going to execute a command with backquotes in it (which is rather unlikely).
+Avoid the use of `%x` unless you’re going to execute a command with backquotes in it (which is rather unlikely).
 
-[source,ruby]
-----
-# bad
-date = %x(date)
+    # bad
+    date = %x(date)
 
-# good
-date = `date`
-echo = %x(echo `date`)
-----
+    # good
+    date = `date`
+    echo = %x(echo `date`)
 
-=== `%s` [[percent-s]]
+## `%s` <span id="percent-s"></span>
 
-Avoid the use of `%s`.
-It seems that the community has decided `:"some string"` is the preferred way to create a symbol with spaces in it.
+Avoid the use of `%s`. It seems that the community has decided `:"some string"` is the preferred way to create a symbol with spaces in it.
 
-=== Percent Literal Braces [[percent-literal-braces]]
+## Percent Literal Braces <span id="percent-literal-braces"></span>
 
 Use the braces that are the most appropriate for the various kinds of percent literals.
 
- * `()` for string literals (`%q`, `%Q`).
- * `[]` for array literals (`%w`, `%i`, `%W`, `%I`) as it is aligned with the standard array literals.
- * `{}` for regexp literals (`%r`) since parentheses often appear inside regular expressions. That's why a less common character with `{` is usually the best delimiter for `%r` literals.
- * `()` for all other literals (e.g. `%s`, `%x`)
+-   `()` for string literals (`%q`, `%Q`).
 
-[source,ruby]
-----
-# bad
-%q{"Test's king!", John said.}
+-   `[]` for array literals (`%w`, `%i`, `%W`, `%I`) as it is aligned with the standard array literals.
 
-# good
-%q("Test's king!", John said.)
+-   `{}` for regexp literals (`%r`) since parentheses often appear inside regular expressions. That’s why a less common character with `{` is usually the best delimiter for `%r` literals.
 
-# bad
-%w(one two three)
-%i(one two three)
+-   `()` for all other literals (e.g. `%s`, `%x`)
 
-# good
-%w[one two three]
-%i[one two three]
+<!-- -->
 
-# bad
-%r((\w+)-(\d+))
-%r{\w{1,2}\d{2,5}}
+    # bad
+    %q{"Test's king!", John said.}
 
-# good
-%r{(\w+)-(\d+)}
-%r|\w{1,2}\d{2,5}|
-----
+    # good
+    %q("Test's king!", John said.)
 
-== Metaprogramming
+    # bad
+    %w(one two three)
+    %i(one two three)
 
-=== No Needless Metaprogramming [[no-needless-metaprogramming]]
+    # good
+    %w[one two three]
+    %i[one two three]
+
+    # bad
+    %r((\w+)-(\d+))
+    %r{\w{1,2}\d{2,5}}
+
+    # good
+    %r{(\w+)-(\d+)}
+    %r|\w{1,2}\d{2,5}|
+
+# Metaprogramming
+
+## No Needless Metaprogramming <span id="no-needless-metaprogramming"></span>
 
 Avoid needless metaprogramming.
 
-=== No Monkey Patching [[no-monkey-patching]]
+## No Monkey Patching <span id="no-monkey-patching"></span>
 
 Do not mess around in core classes when writing libraries (do not monkey-patch them).
 
-=== Block `class_eval` [[block-class-eval]]
+## Block `class_eval` <span id="block-class-eval"></span>
 
 The block form of `class_eval` is preferable to the string-interpolated form.
 
-==== Supply Location [[class-eval-supply-location]]
+### Supply Location <span id="class-eval-supply-location"></span>
 
 When you use the string-interpolated form, always supply `+__FILE__+` and `+__LINE__+`, so that your backtraces make sense:
 
-[source,ruby]
-----
-class_eval 'def use_relative_model_naming?; true; end', __FILE__, __LINE__
-----
+    class_eval 'def use_relative_model_naming?; true; end', __FILE__, __LINE__
 
-==== `define_method` [[class-eval-define_method]]
+### `define_method` <span id="class-eval-define_method"></span>
 
 `define_method` is preferable to `class_eval { def ... }`
 
-=== `eval` Comment Docs [[eval-comment-docs]]
+## `eval` Comment Docs <span id="eval-comment-docs"></span>
 
 When using `class_eval` (or other `eval`) with string interpolation, add a comment block showing its appearance if interpolated (a practice used in Rails code):
 
-[source,ruby]
-----
-# from activesupport/lib/active_support/core_ext/string/output_safety.rb
-UNSAFE_STRING_METHODS.each do |unsafe_method|
-  if 'String'.respond_to?(unsafe_method)
-    class_eval <<-EOT, __FILE__, __LINE__ + 1
-      def #{unsafe_method}(*params, &block)       # def capitalize(*params, &block)
-        to_str.#{unsafe_method}(*params, &block)  #   to_str.capitalize(*params, &block)
-      end                                         # end
+    # from activesupport/lib/active_support/core_ext/string/output_safety.rb
+    UNSAFE_STRING_METHODS.each do |unsafe_method|
+      if 'String'.respond_to?(unsafe_method)
+        class_eval <<-EOT, __FILE__, __LINE__ + 1
+          def #{unsafe_method}(*params, &block)       # def capitalize(*params, &block)
+            to_str.#{unsafe_method}(*params, &block)  #   to_str.capitalize(*params, &block)
+          end                                         # end
 
-      def #{unsafe_method}!(*params)              # def capitalize!(*params)
-        @dirty = true                             #   @dirty = true
-        super                                     #   super
-      end                                         # end
-    EOT
-  end
-end
-----
+          def #{unsafe_method}!(*params)              # def capitalize!(*params)
+            @dirty = true                             #   @dirty = true
+            super                                     #   super
+          end                                         # end
+        EOT
+      end
+    end
 
-=== No `method_missing` [[no-method-missing]]
+## No `method_missing` <span id="no-method-missing"></span>
 
-Avoid using `method_missing` for metaprogramming because backtraces become messy, the behavior is not listed in `#methods`, and misspelled method calls might silently work, e.g. `nukes.luanch_state = false`.
-Consider using delegation, proxy, or `define_method` instead.
-If you must use `method_missing`:
+Avoid using `method_missing` for metaprogramming because backtraces become messy, the behavior is not listed in `#methods`, and misspelled method calls might silently work, e.g. `nukes.luanch_state = false`. Consider using delegation, proxy, or `define_method` instead. If you must use `method_missing`:
 
- * Be sure to https://blog.marc-andre.ca/2010/11/15/methodmissing-politely/[also define `respond_to_missing?`]
- * Only catch methods with a well-defined prefix, such as `find_by_*`--make your code as assertive as possible.
- * Call `super` at the end of your statement
- * Delegate to assertive, non-magical methods:
+-   Be sure to [also define `respond_to_missing?`](https://blog.marc-andre.ca/2010/11/15/methodmissing-politely/)
 
-[source,ruby]
-----
-# bad
-def method_missing(meth, *params, &block)
-  if /^find_by_(?<prop>.*)/ =~ meth
-    # ... lots of code to do a find_by
-  else
-    super
-  end
-end
+-   Only catch methods with a well-defined prefix, such as `find_by_*`--make your code as assertive as possible.
 
-# good
-def method_missing(meth, *params, &block)
-  if /^find_by_(?<prop>.*)/ =~ meth
-    find_by(prop, *params, &block)
-  else
-    super
-  end
-end
+-   Call `super` at the end of your statement
 
-# best of all, though, would to define_method as each findable attribute is declared
-----
+-   Delegate to assertive, non-magical methods:
 
-=== Prefer `public_send` [[prefer-public-send]]
+<!-- -->
+
+    # bad
+    def method_missing(meth, *params, &block)
+      if /^find_by_(?<prop>.*)/ =~ meth
+        # ... lots of code to do a find_by
+      else
+        super
+      end
+    end
+
+    # good
+    def method_missing(meth, *params, &block)
+      if /^find_by_(?<prop>.*)/ =~ meth
+        find_by(prop, *params, &block)
+      else
+        super
+      end
+    end
+
+    # best of all, though, would to define_method as each findable attribute is declared
+
+## Prefer `public_send` <span id="prefer-public-send"></span>
 
 Prefer `public_send` over `send` so as not to circumvent `private`/`protected` visibility.
 
-[source,ruby]
-----
-# We have an ActiveModel Organization that includes concern Activatable
-module Activatable
-  extend ActiveSupport::Concern
+    # We have an ActiveModel Organization that includes concern Activatable
+    module Activatable
+      extend ActiveSupport::Concern
 
-  included do
-    before_create :create_token
-  end
+      included do
+        before_create :create_token
+      end
 
-  private
+      private
 
-  def reset_token
-    # some code
-  end
+      def reset_token
+        # some code
+      end
 
-  def create_token
-    # some code
-  end
+      def create_token
+        # some code
+      end
 
-  def activate!
-    # some code
-  end
-end
+      def activate!
+        # some code
+      end
+    end
 
-class Organization < ActiveRecord::Base
-  include Activatable
-end
+    class Organization < ActiveRecord::Base
+      include Activatable
+    end
 
-linux_organization = Organization.find(...)
-# BAD - violates privacy
-linux_organization.send(:reset_token)
-# GOOD - should throw an exception
-linux_organization.public_send(:reset_token)
-----
+    linux_organization = Organization.find(...)
+    # BAD - violates privacy
+    linux_organization.send(:reset_token)
+    # GOOD - should throw an exception
+    linux_organization.public_send(:reset_token)
 
-=== Prefer `+__send__+` [[prefer-__send__]]
+## Prefer `+__send__+` <span id="prefer-<emphasis>send</emphasis>"></span>
 
 Prefer `+__send__+` over `send`, as `send` may overlap with existing methods.
 
-[source,ruby]
-----
-require 'socket'
+    require 'socket'
 
-u1 = UDPSocket.new
-u1.bind('127.0.0.1', 4913)
-u2 = UDPSocket.new
-u2.connect('127.0.0.1', 4913)
-# Won't send a message to the receiver obj.
-# Instead it will send a message via UDP socket.
-u2.send :sleep, 0
-# Will actually send a message to the receiver obj.
-u2.__send__ ...
-----
+    u1 = UDPSocket.new
+    u1.bind('127.0.0.1', 4913)
+    u2 = UDPSocket.new
+    u2.connect('127.0.0.1', 4913)
+    # Won't send a message to the receiver obj.
+    # Instead it will send a message via UDP socket.
+    u2.send :sleep, 0
+    # Will actually send a message to the receiver obj.
+    u2.__send__ ...
 
-== API Documentation [[api-documentation]]
+# API Documentation <span id="api-documentation"></span>
 
-=== YARD
+## YARD
 
-Use https://yardoc.org/[YARD] and its conventions for API documentation.
+Use [YARD](https://yardoc.org/) and its conventions for API documentation.
 
-=== RD (Block) Comments [[no-block-comments]]
+## RD (Block) Comments <span id="no-block-comments"></span>
 
-Don't use block comments.
-They cannot be preceded by whitespace and are not as easy to spot as regular comments.
+Don’t use block comments. They cannot be preceded by whitespace and are not as easy to spot as regular comments.
 
-[source,ruby]
-----
-# bad
-=begin
-comment line
-another comment line
-=end
+    # bad
+    =begin
+    comment line
+    another comment line
+    =end
 
-# good
-# comment line
-# another comment line
-----
+    # good
+    # comment line
+    # another comment line
 
-.From Perl's POD to RD
-****
-This is not really a block comment syntax, but more of
-an attempt to emulate Perl's https://perldoc.perl.org/perlpod.html[POD] documentation system.
+This is not really a block comment syntax, but more of an attempt to emulate Perl’s [POD](https://perldoc.perl.org/perlpod.html) documentation system.
 
-There's an https://github.com/uwabami/rdtool[rdtool] for Ruby that's pretty similar to POD.
-Basically `rdtool` scans a file for `=begin` and `=end` pairs, and extracts
-the text between them all. This text is assumed to be documentation in
-https://github.com/uwabami/rdtool/blob/master/doc/rd-draft.rd[RD format].
-You can read more about it
-https://ruby-doc.com/docs/ProgrammingRuby/html/rdtool.html[here].
+There’s an [rdtool](https://github.com/uwabami/rdtool) for Ruby that’s pretty similar to POD. Basically `rdtool` scans a file for `=begin` and `=end` pairs, and extracts the text between them all. This text is assumed to be documentation in [RD format](https://github.com/uwabami/rdtool/blob/master/doc/rd-draft.rd). You can read more about it [here](https://ruby-doc.com/docs/ProgrammingRuby/html/rdtool.html).
 
-RD predated the rise of RDoc and YARD and was effectively obsoleted by them.footnote:[According to this https://en.wikipedia.org/wiki/Ruby_Document_format[Wikipedia article] the format used to be popular until the early 2000s when it was superseded by RDoc.]
-****
+RD predated the rise of RDoc and YARD and was effectively obsoleted by them.[3]
 
-== Gemfile and Gemspec
+# Gemfile and Gemspec
 
-=== No `RUBY_VERSION` in the gemspec [[no-ruby-version-in-the-gemspec]]
+## No `RUBY_VERSION` in the gemspec <span id="no-ruby-version-in-the-gemspec"></span>
 
-The gemspec should not contain `RUBY_VERSION` as a condition to switch dependencies.
-`RUBY_VERSION` is determined by `rake release`, so users may end up with wrong dependency.
+The gemspec should not contain `RUBY_VERSION` as a condition to switch dependencies. `RUBY_VERSION` is determined by `rake release`, so users may end up with wrong dependency.
 
-[source,ruby]
-----
-# bad
-Gem::Specification.new do |s|
-  if RUBY_VERSION >= '2.5'
-    s.add_runtime_dependency 'gem_a'
-  else
-    s.add_runtime_dependency 'gem_b'
-  end
-end
-----
+    # bad
+    Gem::Specification.new do |s|
+      if RUBY_VERSION >= '2.5'
+        s.add_runtime_dependency 'gem_a'
+      else
+        s.add_runtime_dependency 'gem_b'
+      end
+    end
 
 Fix by either:
 
-* Post-install messages.
-* Add both gems as dependency (if permissible).
-* If development dependencies, move to Gemfile.
+-   Post-install messages.
 
-== Misc
+-   Add both gems as dependency (if permissible).
 
-=== No Flip-flops [[no-flip-flops]]
+-   If development dependencies, move to Gemfile.
+
+# Misc
+
+## No Flip-flops <span id="no-flip-flops"></span>
 
 Avoid the use of flip-flops.
 
-=== No non-`nil` Checks [[no-non-nil-checks]]
+## No non-`nil` Checks <span id="no-non-nil-checks"></span>
 
-Don't do explicit non-`nil` checks unless you're dealing with boolean values.
+Don’t do explicit non-`nil` checks unless you’re dealing with boolean values.
 
-[source,ruby]
-----
-# bad
-do_something if !something.nil?
-do_something if something != nil
+    # bad
+    do_something if !something.nil?
+    do_something if something != nil
 
-# good
-do_something if something
+    # good
+    do_something if something
 
-# good - dealing with a boolean
-def value_set?
-  !@some_boolean.nil?
-end
-----
+    # good - dealing with a boolean
+    def value_set?
+      !@some_boolean.nil?
+    end
 
-=== Global Input/Output Streams [[global-stdout]]
+## Global Input/Output Streams <span id="global-stdout"></span>
 
-Use `$stdout/$stderr/$stdin` instead of `STDOUT/STDERR/STDIN`.
-`STDOUT/STDERR/STDIN` are constants, and while you can actually reassign (possibly to redirect some stream) constants in Ruby, you'll get an interpreter warning if you do so.
+Use `$stdout/$stderr/$stdin` instead of `STDOUT/STDERR/STDIN`. `STDOUT/STDERR/STDIN` are constants, and while you can actually reassign (possibly to redirect some stream) constants in Ruby, you’ll get an interpreter warning if you do so.
 
-[source,ruby]
-----
-# bad
-STDOUT.puts('hello')
+    # bad
+    STDOUT.puts('hello')
 
-hash = { out: STDOUT, key: value }
+    hash = { out: STDOUT, key: value }
 
-def m(out = STDOUT)
-  out.puts('hello')
-end
+    def m(out = STDOUT)
+      out.puts('hello')
+    end
 
-# good
-$stdout.puts('hello')
+    # good
+    $stdout.puts('hello')
 
-hash = { out: $stdout, key: value }
+    hash = { out: $stdout, key: value }
 
-def m(out = $stdout)
-  out.puts('hello')
-end
-----
+    def m(out = $stdout)
+      out.puts('hello')
+    end
 
-NOTE: The only valid use-case for the stream constants is obtaining references to the original streams (assuming you've redirected some of the global vars).
+The only valid use-case for the stream constants is obtaining references to the original streams (assuming you’ve redirected some of the global vars).
 
-=== Warn [[warn]]
+## Warn <span id="warn"></span>
 
-Use `warn` instead of `$stderr.puts`.
-Apart from being more concise and clear, `warn` allows you to suppress warnings if you need to (by setting the warn level to 0 via `-W0`).
+Use `warn` instead of `$stderr.puts`. Apart from being more concise and clear, `warn` allows you to suppress warnings if you need to (by setting the warn level to 0 via `-W0`).
 
-[source,ruby]
-----
-# bad
-$stderr.puts 'This is a warning!'
+    # bad
+    $stderr.puts 'This is a warning!'
 
-# good
-warn 'This is a warning!'
-----
+    # good
+    warn 'This is a warning!'
 
-=== `Array#join` [[array-join]]
+## `Array#join` <span id="array-join"></span>
 
 Prefer the use of `Array#join` over the fairly cryptic `Array#*` with a string argument.
 
-[source,ruby]
-----
-# bad
-%w[one two three] * ', '
-# => 'one, two, three'
+    # bad
+    %w[one two three] * ', '
+    # => 'one, two, three'
 
-# good
-%w[one two three].join(', ')
-# => 'one, two, three'
-----
+    # good
+    %w[one two three].join(', ')
+    # => 'one, two, three'
 
-=== Array Coercion [[array-coercion]]
+## Array Coercion <span id="array-coercion"></span>
 
-Use `Array()` instead of explicit `Array` check or `[*var]`, when dealing with a variable you want to treat as an Array, but you're not certain it's an array.
+Use `Array()` instead of explicit `Array` check or `[*var]`, when dealing with a variable you want to treat as an Array, but you’re not certain it’s an array.
 
-[source,ruby]
-----
-# bad
-paths = [paths] unless paths.is_a?(Array)
-paths.each { |path| do_something(path) }
+    # bad
+    paths = [paths] unless paths.is_a?(Array)
+    paths.each { |path| do_something(path) }
 
-# bad (always creates a new Array instance)
-[*paths].each { |path| do_something(path) }
+    # bad (always creates a new Array instance)
+    [*paths].each { |path| do_something(path) }
 
-# good (and a bit more readable)
-Array(paths).each { |path| do_something(path) }
-----
+    # good (and a bit more readable)
+    Array(paths).each { |path| do_something(path) }
 
-=== Ranges or `between` [[ranges-or-between]]
+## Ranges or `between` <span id="ranges-or-between"></span>
 
 Use ranges or `Comparable#between?` instead of complex comparison logic when possible.
 
-[source,ruby]
-----
-# bad
-do_something if x >= 1000 && x <= 2000
+    # bad
+    do_something if x >= 1000 && x <= 2000
 
-# good
-do_something if (1000..2000).include?(x)
+    # good
+    do_something if (1000..2000).include?(x)
 
-# good
-do_something if x.between?(1000, 2000)
-----
+    # good
+    do_something if x.between?(1000, 2000)
 
-=== Predicate Methods [[predicate-methods]]
+## Predicate Methods <span id="predicate-methods"></span>
 
-Prefer the use of predicate methods to explicit comparisons with `==`.
-Numeric comparisons are OK.
+Prefer the use of predicate methods to explicit comparisons with `==`. Numeric comparisons are OK.
 
-[source,ruby]
-----
-# bad
-if x % 2 == 0
-end
+    # bad
+    if x % 2 == 0
+    end
 
-if x % 2 == 1
-end
+    if x % 2 == 1
+    end
 
-if x == nil
-end
+    if x == nil
+    end
 
-# good
-if x.even?
-end
+    # good
+    if x.even?
+    end
 
-if x.odd?
-end
+    if x.odd?
+    end
 
-if x.nil?
-end
+    if x.nil?
+    end
 
-if x.zero?
-end
+    if x.zero?
+    end
 
-if x == 0
-end
-----
+    if x == 0
+    end
 
-=== No Cryptic Perlisms [[no-cryptic-perlisms]]
+## No Cryptic Perlisms <span id="no-cryptic-perlisms"></span>
 
-Avoid using Perl-style special variables (like `$:`, `$;`, etc).
-They are quite cryptic and their use in anything but one-liner scripts is discouraged.
+Avoid using Perl-style special variables (like `$:`, `$;`, etc). They are quite cryptic and their use in anything but one-liner scripts is discouraged.
 
-[source,ruby]
-----
-# bad
-$:.unshift File.dirname(__FILE__)
+    # bad
+    $:.unshift File.dirname(__FILE__)
 
-# good
-$LOAD_PATH.unshift File.dirname(__FILE__)
-----
+    # good
+    $LOAD_PATH.unshift File.dirname(__FILE__)
 
 Use the human-friendly aliases provided by the `English` library if required.
 
-[source,ruby]
-----
-# bad
-print $', $$
+    # bad
+    print $', $$
 
-# good
-require 'English'
-print $POSTMATCH, $PID
-----
+    # good
+    require 'English'
+    print $POSTMATCH, $PID
 
-=== Use `require_relative` whenever possible
+## Use `require_relative` whenever possible
 
-For all your internal dependencies, you should use `require_relative`.
-Use of `require` should be reserved for external dependencies
+For all your internal dependencies, you should use `require_relative`. Use of `require` should be reserved for external dependencies
 
-[source,ruby]
-----
-# bad
-require 'set'
-require 'my_gem/spec/helper'
-require 'my_gem/lib/something'
+    # bad
+    require 'set'
+    require 'my_gem/spec/helper'
+    require 'my_gem/lib/something'
 
-# good
-require 'set'
-require_relative 'helper'
-require_relative '../lib/something'
-----
+    # good
+    require 'set'
+    require_relative 'helper'
+    require_relative '../lib/something'
 
-This way is more expressive (making clear which dependency is internal or not) and more efficient (as `require_relative` doesn't have to try all of `$LOAD_PATH` contrary to `require`).
+This way is more expressive (making clear which dependency is internal or not) and more efficient (as `require_relative` doesn’t have to try all of `$LOAD_PATH` contrary to `require`).
 
-=== Always Warn [[always-warn]]
+## Always Warn <span id="always-warn"></span>
 
 Write `ruby -w` safe code.
 
-=== No Optional Hash Params [[no-optional-hash-params]]
+## No Optional Hash Params <span id="no-optional-hash-params"></span>
 
-Avoid hashes as optional parameters.
-Does the method do too much? (Object initializers are exceptions for this rule).
+Avoid hashes as optional parameters. Does the method do too much? (Object initializers are exceptions for this rule).
 
-=== Instance Vars [[instance-vars]]
+## Instance Vars <span id="instance-vars"></span>
 
 Use module instance variables instead of global variables.
 
-[source,ruby]
-----
-# bad
-$foo_bar = 1
+    # bad
+    $foo_bar = 1
 
-# good
-module Foo
-  class << self
-    attr_accessor :bar
-  end
-end
+    # good
+    module Foo
+      class << self
+        attr_accessor :bar
+      end
+    end
 
-Foo.bar = 1
-----
+    Foo.bar = 1
 
-=== `OptionParser` [[optionparser]]
+## `OptionParser` <span id="optionparser"></span>
 
 Use `OptionParser` for parsing complex command line options and `ruby -s` for trivial command line options.
 
-=== No Param Mutations [[no-param-mutations]]
+## No Param Mutations <span id="no-param-mutations"></span>
 
 Do not mutate parameters unless that is the purpose of the method.
 
-=== Three is the Number Thou Shalt Count [[three-is-the-number-thou-shalt-count]]
+## Three is the Number Thou Shalt Count <span id="three-is-the-number-thou-shalt-count"></span>
 
 Avoid more than three levels of block nesting.
 
-=== Functional Code [[functional-code]]
+## Functional Code <span id="functional-code"></span>
 
 Code in a functional way, avoiding mutation when that makes sense.
 
-[source,ruby]
-----
-a = []; [1, 2, 3].each { |i| a << i * 2 }   # bad
-a = [1, 2, 3].map { |i| i * 2 }             # good
+    a = []; [1, 2, 3].each { |i| a << i * 2 }   # bad
+    a = [1, 2, 3].map { |i| i * 2 }             # good
 
-a = {}; [1, 2, 3].each { |i| a[i] = i * 17 }                # bad
-a = [1, 2, 3].reduce({}) { |h, i| h[i] = i * 17; h }        # good
-a = [1, 2, 3].each_with_object({}) { |i, h| h[i] = i * 17 } # good
-----
+    a = {}; [1, 2, 3].each { |i| a[i] = i * 17 }                # bad
+    a = [1, 2, 3].reduce({}) { |h, i| h[i] = i * 17; h }        # good
+    a = [1, 2, 3].each_with_object({}) { |i, h| h[i] = i * 17 } # good
 
-=== No explicit `.rb` to `require` [[no-explicit-rb-to-require]]
+## No explicit `.rb` to `require` <span id="no-explicit-rb-to-require"></span>
 
 Omit the `.rb` extension for filename passed to `require` and `require_relative`.
 
-NOTE: If the extension is omitted, Ruby tries adding '.rb', '.so', and so on to the name
-until found. If the file named cannot be found, a `LoadError` will be raised.
-There is an edge case where `foo.so` file is loaded instead of a `LoadError`
-if `foo.so` file exists when `require 'foo.rb'` will be changed to `require 'foo'`,
-but that seems harmless.
+If the extension is omitted, Ruby tries adding *.rb*, *.so*, and so on to the name until found. If the file named cannot be found, a `LoadError` will be raised. There is an edge case where `foo.so` file is loaded instead of a `LoadError` if `foo.so` file exists when `require 'foo.rb'` will be changed to `require 'foo'`, but that seems harmless.
 
-[source,ruby]
-----
-# bad
-require 'foo.rb'
-require_relative '../foo.rb'
+    # bad
+    require 'foo.rb'
+    require_relative '../foo.rb'
 
-# good
-require 'foo'
-require 'foo.so'
-require_relative '../foo'
-require_relative '../foo.so'
-----
+    # good
+    require 'foo'
+    require 'foo.so'
+    require_relative '../foo'
+    require_relative '../foo.so'
 
-=== Avoid `tap`
+## Avoid `tap`
 
 The method `tap` can be helpful for debugging purposes but should not be left in production code.
-[source,ruby]
-----
-# bad
-Config.new(hash, path).tap do |config|
-  config.check if check
-end
 
-# good
-config = Config.new(hash, path)
-config.check if check
-config
-----
+    # bad
+    Config.new(hash, path).tap do |config|
+      config.check if check
+    end
+
+    # good
+    config = Config.new(hash, path)
+    config.check if check
+    config
 
 This is simpler and more efficient.
 
-== Tools
+# Tools
 
 Here are some tools to help you automatically check Ruby code against this guide.
 
-=== RuboCop
+## RuboCop
 
-https://github.com/rubocop/rubocop[RuboCop] is a Ruby static code analyzer and formatter, based on this style guide.
-RuboCop already covers a significant portion of the guide and has https://docs.rubocop.org/rubocop/integration_with_other_tools.html[plugins] for most popular Ruby editors and IDEs.
+[RuboCop](https://github.com/rubocop/rubocop) is a Ruby static code analyzer and formatter, based on this style guide. RuboCop already covers a significant portion of the guide and has [plugins](https://docs.rubocop.org/rubocop/integration_with_other_tools.html) for most popular Ruby editors and IDEs.
 
-TIP: RuboCop's cops (code checks) have links to the guidelines that they are based on, as part of their metadata.
+RuboCop’s cops (code checks) have links to the guidelines that they are based on, as part of their metadata.
 
-=== RubyMine
+## RubyMine
 
-https://www.jetbrains.com/ruby/[RubyMine]'s code inspections are https://confluence.jetbrains.com/display/RUBYDEV/RubyMine+Inspections[partially based] on this guide.
+[RubyMine](https://www.jetbrains.com/ruby/)'s code inspections are [partially based](https://confluence.jetbrains.com/display/RUBYDEV/RubyMine+Inspections) on this guide.
 
-== History
+# History
 
-This guide started its life in 2011 as an internal company Ruby coding guidelines (written by https://github.com/bbatsov[Bozhidar Batsov]).
-Bozhidar had always been bothered as a Ruby developer about one thing  - Python developers had a great programming style reference (https://www.python.org/dev/peps/pep-0008/[PEP-8]) and Rubyists never got an official guide, documenting Ruby coding style and best practices.
-Bozhidar firmly believed that style matters.
-He also believed that a great hacker community, such as Ruby has, should be quite capable of producing this coveted document.
-The rest is history...
+This guide started its life in 2011 as an internal company Ruby coding guidelines (written by [Bozhidar Batsov](https://github.com/bbatsov)). Bozhidar had always been bothered as a Ruby developer about one thing - Python developers had a great programming style reference ([PEP-8](https://www.python.org/dev/peps/pep-0008/)) and Rubyists never got an official guide, documenting Ruby coding style and best practices. Bozhidar firmly believed that style matters. He also believed that a great hacker community, such as Ruby has, should be quite capable of producing this coveted document. The rest is history…
 
-At some point Bozhidar decided that the work he was doing might be interesting to members of the Ruby community in general and that the world had little need for another internal company guideline.
-But the world could certainly benefit from a community-driven and community-sanctioned set of practices, idioms and style prescriptions for Ruby programming.
+At some point Bozhidar decided that the work he was doing might be interesting to members of the Ruby community in general and that the world had little need for another internal company guideline. But the world could certainly benefit from a community-driven and community-sanctioned set of practices, idioms and style prescriptions for Ruby programming.
 
-Bozhidar served as the guide's only editor for a few years, before a team of editors was formed once the project transitioned to RuboCop HQ.
+Bozhidar served as the guide’s only editor for a few years, before a team of editors was formed once the project transitioned to RuboCop HQ.
 
-Since the inception of the guide we've received a lot of feedback from members of the exceptional Ruby community around the world.
-Thanks for all the suggestions and the support! Together we can make a resource beneficial to each and every Ruby developer out there.
+Since the inception of the guide we’ve received a lot of feedback from members of the exceptional Ruby community around the world. Thanks for all the suggestions and the support! Together we can make a resource beneficial to each and every Ruby developer out there.
 
-== Sources of Inspiration
+# Sources of Inspiration
 
 Many people, books, presentations, articles and other style guides influenced the community Ruby style guide. Here are some of them:
 
-* https://en.wikipedia.org/wiki/The_Elements_of_Style["The Elements of Style"]
-* https://en.wikipedia.org/wiki/The_Elements_of_Programming_Style["The Elements of Programming Style"]
-* https://www.python.org/dev/peps/pep-0008/[The Python Style Guide (PEP-8)]
-* https://pragprog.com/book/ruby4/programming-ruby-1-9-2-0["Programming Ruby"]
-* https://www.amazon.com/Ruby-Programming-Language-David-Flanagan/dp/0596516177["The Ruby Programming Language"]
+-   ["The Elements of Style"](https://en.wikipedia.org/wiki/The_Elements_of_Style)
 
-== Contributing
+-   ["The Elements of Programming Style"](https://en.wikipedia.org/wiki/The_Elements_of_Programming_Style)
 
-The guide is still a work in progress - some guidelines are lacking examples, some guidelines don't have examples that illustrate them clearly enough.
-Improving such guidelines is a great (and simple way) to help the Ruby community!
+-   [The Python Style Guide (PEP-8)](https://www.python.org/dev/peps/pep-0008/)
+
+-   ["Programming Ruby"](https://pragprog.com/book/ruby4/programming-ruby-1-9-2-0)
+
+-   ["The Ruby Programming Language"](https://www.amazon.com/Ruby-Programming-Language-David-Flanagan/dp/0596516177)
+
+# Contributing
+
+The guide is still a work in progress - some guidelines are lacking examples, some guidelines don’t have examples that illustrate them clearly enough. Improving such guidelines is a great (and simple way) to help the Ruby community!
 
 In due time these issues will (hopefully) be addressed - just keep them in mind for now.
 
-Nothing written in this guide is set in stone.
-It's our desire to work together with everyone interested in Ruby coding style, so that we could ultimately create a resource that will be beneficial to the entire Ruby community.
+Nothing written in this guide is set in stone. It’s our desire to work together with everyone interested in Ruby coding style, so that we could ultimately create a resource that will be beneficial to the entire Ruby community.
 
-Feel free to open tickets or send pull requests with improvements.
-Thanks in advance for your help!
+Feel free to open tickets or send pull requests with improvements. Thanks in advance for your help!
 
 You can also support the project (and RuboCop) with financial contributions via one of the following platforms:
 
-* https://github.com/sponsors/bbatsov[GitHub Sponsors]
-* https://ko-fi.com/bbatsov[ko-fi]
-* https://www.patreon.com/bbatsov[Patreon]
-* https://www.paypal.me/bbatsov[PayPal]
+-   [GitHub Sponsors](https://github.com/sponsors/bbatsov)
 
-=== How to Contribute?
+-   [ko-fi](https://ko-fi.com/bbatsov)
 
-It's easy, just follow the contribution guidelines below:
+-   [Patreon](https://www.patreon.com/bbatsov)
 
-* https://help.github.com/articles/fork-a-repo[Fork] https://github.com/rubocop/ruby-style-guide[rubocop/ruby-style-guide] on GitHub
-* Make your feature addition or bug fix in a feature branch.
-* Include a https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[good description] of your changes
-* Push your feature branch to GitHub
-* Send a https://help.github.com/articles/using-pull-requests[Pull Request]
+-   [PayPal](https://www.paypal.me/bbatsov)
 
-== Colophon
+## How to Contribute?
 
-This guide is written in https://asciidoc.org/[AsciiDoc] and is published as HTML using https://asciidoctor.org/[AsciiDoctor].
-The HTML version of the guide is hosted on GitHub Pages.
+It’s easy, just follow the contribution guidelines below:
+
+-   [Fork](https://help.github.com/articles/fork-a-repo) [rubocop/ruby-style-guide](https://github.com/rubocop/ruby-style-guide) on GitHub
+
+-   Make your feature addition or bug fix in a feature branch.
+
+-   Include a [good description](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) of your changes
+
+-   Push your feature branch to GitHub
+
+-   Send a [Pull Request](https://help.github.com/articles/using-pull-requests)
+
+# Colophon
+
+This guide is written in [AsciiDoc](https://asciidoc.org/) and is published as HTML using [AsciiDoctor](https://asciidoctor.org/). The HTML version of the guide is hosted on GitHub Pages.
 
 Originally the guide was written in Markdown, but was converted to AsciiDoc in 2019.
 
-== License
+# License
 
-image:https://i.creativecommons.org/l/by/3.0/88x31.png[Creative Commons License] This work is licensed under a https://creativecommons.org/licenses/by/3.0/deed.en_US[Creative Commons Attribution 3.0 Unported License]
+![Creative Commons License](https://i.creativecommons.org/l/by/3.0/88x31.png) This work is licensed under a [Creative Commons Attribution 3.0 Unported License](https://creativecommons.org/licenses/by/3.0/deed.en_US)
 
-== Spread the Word
+# Spread the Word
 
-A community-driven style guide is of little use to a community that doesn't know about its existence.
-Tweet about the guide, share it with your friends and colleagues.
-Every comment, suggestion or opinion we get makes the guide just a little bit better.
-And we want to have the best possible guide, don't we?
+A community-driven style guide is of little use to a community that doesn’t know about its existence. Tweet about the guide, share it with your friends and colleagues. Every comment, suggestion or opinion we get makes the guide just a little bit better. And we want to have the best possible guide, don’t we?
+
+[1] Occasionally we might suggest to the reader to consider some alternatives, though.
+
+[2] \*BSD/Solaris/Linux/macOS users are covered by default, Windows users have to be extra careful.
+
+[3] According to this [Wikipedia article](https://en.wikipedia.org/wiki/Ruby_Document_format) the format used to be popular until the early 2000s when it was superseded by RDoc.
